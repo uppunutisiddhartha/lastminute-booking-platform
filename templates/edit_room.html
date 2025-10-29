@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Room - {{ room.hotel.name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; color: #333; }
+        header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: 30px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { margin-bottom: 20px; text-align: center; }
+        form label { display: block; margin-top: 15px; font-weight: bold; }
+        form input, form select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+        .button { display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        .button:hover { background-color: #3e8e41; }
+        .error { color: red; margin-top: 10px; text-align: center; }
+        .back-link { display: block; margin-top: 20px; text-align: center; text-decoration: none; color: #4CAF50; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Edit Room - {{ room.hotel.name }}</h1>
+    </header>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <label for="floor_number">Floor Number</label>
+            <input type="number" name="floor_number" id="floor_number" value="{{ room.floor_number }}" required>
+
+            <label for="room_number">Room Number</label>
+            <input type="text" name="room_number" id="room_number" value="{{ room.room_number }}" required>
+
+            <label for="room_type">Room Type</label>
+            <select name="room_type" id="room_type" required>
+                <option value="">Select Type</option>
+                <option value="Single" {% if room.room_type == 'Single' %}selected{% endif %}>Single</option>
+                <option value="Double" {% if room.room_type == 'Double' %}selected{% endif %}>Double</option>
+                <option value="Suite" {% if room.room_type == 'Suite' %}selected{% endif %}>Suite</option>
+            </select>
+
+            <label for="price_per_night">Price per Night</label>
+            <input type="number" name="price_per_night" id="price_per_night" step="0.01" value="{{ room.price_per_night }}" required>
+
+            <label for="capacity">Capacity</label>
+            <input type="number" name="capacity" id="capacity" value="{{ room.capacity }}" required>
+
+            <label for="available">Available</label>
+            <input type="checkbox" name="available" id="available" {% if room.available %}checked{% endif %}>
+
+            <button type="submit" class="button">Update Room</button>
+        </form>
+
+        <a href="{% url 'manage_rooms' room.hotel.id %}" class="back-link">Back to Manage Rooms</a>
+    </div>
+</body>
+</html>

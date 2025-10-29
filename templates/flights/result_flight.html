@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Search Results | SkyFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --secondary-dark: #0d9668;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .search-info {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .route {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .route i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .airport {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .airport-code {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .airport-name {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .flight-count {
+            background: var(--light);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .results-section {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .results-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .results-header h2 {
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sort-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sort-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sort-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--light);
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        td {
+            padding: 20px;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .flight-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .airline-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .flight-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flight-no {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .airline-name {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .route-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .time {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .date {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .airport-code-sm {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .flight-route {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin: 0 15px;
+        }
+
+        .duration {
+            font-size: 14px;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .flight-path {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--light-gray);
+        }
+
+        .line {
+            width: 60px;
+            height: 2px;
+            background: var(--light-gray);
+        }
+
+        .plane-icon {
+            color: var(--primary);
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .status.on-time {
+            background: #d1fae5;
+            color: var(--secondary-dark);
+        }
+
+        .status.delayed {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status.cancelled {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .price {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        .book-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .book-btn:hover {
+            background: var(--secondary-dark);
+            transform: translateY(-2px);
+        }
+
+        .login-prompt {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .login-prompt a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-prompt a:hover {
+            text-decoration: underline;
+        }
+
+        .no-flights {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .no-flights i {
+            font-size: 64px;
+            color: var(--light-gray);
+            margin-bottom: 20px;
+        }
+
+        .no-flights h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .no-flights p {
+            color: var(--gray);
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        .search-again-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-again-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .search-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .route {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .sort-options {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .flight-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .route-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .flight-route {
+                flex-direction: row;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-plane-departure"></i>
+                <h1>SkyFinder</h1>
+            </div>
+            <p>Find and book your perfect flight</p>
+        </header>
+
+        <div class="search-info">
+            <div class="route">
+                <div class="airport">
+                    <div class="airport-code">{{ source }}</div>
+                    <div class="airport-name">Departure</div>
+                </div>
+                <i class="fas fa-long-arrow-alt-right"></i>
+                <div class="airport">
+                    <div class="airport-code">{{ destination }}</div>
+                    <div class="airport-name">Destination</div>
+                </div>
+            </div>
+            <div class="flight-count">{{ flights|length }} flights found</div>
+        </div>
+
+        {% if flights %}
+        <div class="results-section">
+            <div class="results-header">
+                <h2>Available Flights</h2>
+                <div class="sort-options">
+                    <button class="sort-btn active">Price</button>
+                    <button class="sort-btn">Duration</button>
+                    <button class="sort-btn">Departure</button>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Flight</th>
+                        <th>Route</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flight in flights %}
+                    <tr>
+                        <td>
+                            <div class="flight-info">
+                                <div class="airline-logo">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div class="flight-details">
+                                    <div class="flight-no">{{ flight.flight_no }}</div>
+                                    <div class="airline-name">{{ flight.airline }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="route-info">
+                                <div>
+                                    <div class="time">{{ flight.dep_time }}</div>
+                                    <div class="airport-code-sm">{{ flight.dep_airport }}</div>
+                                </div>
+                                <div class="flight-route">
+                                    <div class="duration">2h 15m</div>
+                                    <div class="flight-path">
+                                        <div class="dot"></div>
+                                        <div class="line"></div>
+                                        <i class="fas fa-plane plane-icon"></i>
+                                        <div class="line"></div>
+                                        <div class="dot"></div>
+                                    </div>
+                                    <div class="date">Today</div>
+                                </div>
+                                <div>
+                                    <div class="time">{{ flight.arr_time }}</div>
+                                    <div class="airport-code-sm">{{ flight.arr_airport }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>2h 15m</td>
+                        <td>
+                            {% if flight.status == "On Time" %}
+                            <div class="status on-time">{{ flight.status }}</div>
+                            {% elif flight.status == "Delayed" %}
+                            <div class="status delayed">{{ flight.status }}</div>
+                            {% else %}
+                            <div class="status cancelled">{{ flight.status }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="price">₹{{ flight.price }}</td>
+                        <td>
+                        <td>
+    {% if user.is_authenticated %}
+    <form method="POST" action="{% url 'flight_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="airline" value="{{ flight.airline }}">
+        <input type="hidden" name="flight_no" value="{{ flight.flight_no }}">
+        <input type="hidden" name="dep_airport" value="{{ flight.dep_airport }}">
+        <input type="hidden" name="arr_airport" value="{{ flight.arr_airport }}">
+        <input type="hidden" name="dep_time" value="{{ flight.dep_time }}">
+        <input type="hidden" name="arr_time" value="{{ flight.arr_time }}">
+        <input type="hidden" name="price" value="{{ flight.price }}">
+        <button type="submit" class="book-btn">
+            <i class="fas fa-ticket-alt"></i> Book Now
+        </button>
+    </form>
+    {% else %}
+    <div class="login-prompt">
+        <a href="{% url 'login' %}">Login</a> to book this flight
+    </div>
+    {% endif %}
+</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-flights">
+            <i class="fas fa-plane-slash"></i>
+            <h3>No flights available</h3>
+            <p>We couldn't find any live flights between {{ source }} and {{ destination }} at the moment. Please try different airports or dates.</p>
+            <button class="search-again-btn">Search Again</button>
+        </div>
+        {% endif %}
+
+        <footer>
+            <p>© 2023 SkyFinder. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add interactivity to sort buttons
+        document.querySelectorAll('.sort-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.sort-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

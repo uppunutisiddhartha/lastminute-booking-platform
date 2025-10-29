@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flight Finder | Flight Booker</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom right, #007bff, #00c6ff);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 60px;
+        }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; }
+        form {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: inline-block;
+            margin-top: 30px;
+            width: 350px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        button:hover { background: #0056b3; }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✈️ Flight Booker</h1>
+        <p>Find live flights right now</p>
+
+       <form method="POST" action="{% url 'search_flights' %}">
+    {% csrf_token %}
+    <input type="text" name="source" placeholder="Departure (e.g. DEL)" required>
+    <input type="text" name="destination" placeholder="Arrival (e.g. BOM)" required>
+    <input type="date" name="depart_date" required>  <!-- 👈 new -->
+    <button type="submit">Search Flights</button>
+</form>
+
+    </div>
+
+    <footer>
+        &copy; {{ now|date:"Y" }} Flight Booker | Powered by AviationStack API
+    </footer>
+</body>
+</html>

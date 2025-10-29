@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dealer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+
+        .hotel-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .hotel-card h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 18px;
+            font-size: 14px;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background-color: #3e8e41;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Dealer Dashboard</h1>
+    </header>
+ <a href="{% url 'add_hotel' %}" class="button">Add Your First Hotel</a>
+    <div class="container">
+        <h2>Your Hotels</h2>
+
+        {% if hotels %}
+            {% for hotel in hotels %}
+            <div class="hotel-card">
+                <h3>{{ hotel.name }}</h3>
+                <p><strong>Location:</strong> {{ hotel.location }}</p>
+                <p><strong>Floors:</strong> {{ hotel.floor_count }}</p>
+                <p>{{ hotel.description|default:"No description provided." }}</p>
+                <a href="{% url 'manage_rooms' hotel.id %}" class="button">Manage Rooms</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="d">
+                <p>You haven’t added any hotels yet.</p>
+                <a href="{% url 'add_hotel' %}" class="button">Add Your First Hotel</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

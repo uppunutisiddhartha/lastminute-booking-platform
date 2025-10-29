@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ hotel.name }} - Rooms</title>
+    <style>
+        :root {
+            --primary: #0077ff;
+            --primary-hover: #005dcc;
+            --success: #00c48c;
+            --danger: #e74c3c;
+            --light: #f7f9fc;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        h1 {
+            color: var(--dark);
+            font-size: 2rem;
+        }
+        
+        .hotel-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .filter-select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 16px;
+            background: var(--white);
+            cursor: pointer;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .card p {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--white);
+            font-weight: bold;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .available {
+            background: var(--success);
+        }
+        
+        .booked {
+            background: var(--danger);
+        }
+        
+        .amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .amenity-tag {
+            background: var(--light);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--dark);
+        }
+        
+        .btn {
+            text-decoration: none;
+            color: var(--white);
+            background: var(--primary);
+            padding: 10px 20px;
+            border-radius: 6px;
+            display: inline-block;
+            text-align: center;
+            font-weight: 600;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background: var(--gray);
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+            grid-column: 1 / -1;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .cards {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .search-box, .filter-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ hotel.name }} - Available Rooms</h1>
+            <a href="#" class="btn btn-secondary">Back to Hotels</a>
+        </header>
+        
+        <div class="hotel-info">
+            <p><strong>Location:</strong> {{ hotel.location }}</p>
+            <p><strong>Rating:</strong> {{ hotel.rating }} ★</p>
+            <p>{{ hotel.description }}</p>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by room type, amenities...">
+            <select id="availabilityFilter" class="filter-select">
+                <option value="all">All Rooms</option>
+                <option value="available">Available Only</option>
+                <option value="booked">Booked</option>
+            </select>
+            <select id="priceFilter" class="filter-select">
+                <option value="all">Any Price</option>
+                <option value="0-100">$0 - $100</option>
+                <option value="100-200">$100 - $200</option>
+                <option value="200-500">$200 - $500</option>
+                <option value="500+">$500+</option>
+            </select>
+            <button id="resetFilters" class="btn btn-secondary">Reset Filters</button>
+        </div>
+        
+        <div class="cards" id="roomsContainer">
+            {% for room in rooms %}
+            <div class="card" data-available="{{ room.available }}" data-price="{{ room.price_per_night }}" data-type="{{ room.room_type }}" data-amenities="{{ room.amenities|join:', ' }}">
+                <h3>Room {{ room.room_number }}</h3>
+                <p><strong>Type:</strong> {{ room.room_type }}</p>
+                <div class="price">${{ room.price_per_night }} <small>/night</small></div>
+                <p><strong>Capacity:</strong> {{ room.capacity }} person{{ room.capacity  }}</p>
+                
+                <div class="amenities">
+                    {% for amenity in room.amenities %}
+                    <span class="amenity-tag">{{ amenity }}</span>
+                    {% endfor %}
+                </div>
+                
+                {% if room.available %}
+                <span class="badge available">Available</span>
+                <a href="{% url 'book_room' room.id %}" class="btn">Book Now</a>
+
+                {% else %}
+                <span class="badge booked">Booked</span>
+                <button class="btn" disabled>Not Available</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="footer-links">
+            <a href="#" class="btn btn-secondary">Back to Hotels</a>
+            <a href="#" class="btn">Contact Hotel</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const availabilityFilter = document.getElementById('availabilityFilter');
+            const priceFilter = document.getElementById('priceFilter');
+            const resetFilters = document.getElementById('resetFilters');
+            const roomsContainer = document.getElementById('roomsContainer');
+            const cards = Array.from(roomsContainer.getElementsByClassName('card'));
+            
+            function filterRooms() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const availabilityValue = availabilityFilter.value;
+                const priceValue = priceFilter.value;
+                
+                cards.forEach(card => {
+                    let show = true;
+                    
+                    // Search filter
+                    if (searchTerm) {
+                        const roomType = card.dataset.type.toLowerCase();
+                        const amenities = card.dataset.amenities.toLowerCase();
+                        
+                        if (!roomType.includes(searchTerm) && !amenities.includes(searchTerm)) {
+                            show = false;
+                        }
+                    }
+                    
+                    // Availability filter
+                    if (availabilityValue !== 'all') {
+                        const isAvailable = card.dataset.available === 'true';
+                        if ((availabilityValue === 'available' && !isAvailable) || 
+                            (availabilityValue === 'booked' && isAvailable)) {
+                            show = false;
+                        }
+                    }
+                    
+                    // Price filter
+                    if (priceValue !== 'all') {
+                        const price = parseFloat(card.dataset.price);
+                        
+                        switch(priceValue) {
+                            case '0-100':
+                                if (price < 0 || price > 100) show = false;
+                                break;
+                            case '100-200':
+                                if (price < 100 || price > 200) show = false;
+                                break;
+                            case '200-500':
+                                if (price < 200 || price > 500) show = false;
+                                break;
+                            case '500+':
+                                if (price < 500) show = false;
+                                break;
+                        }
+                    }
+                    
+                    card.style.display = show ? 'block' : 'none';
+                });
+                
+                // Show no results message if needed
+                const visibleCards = cards.filter(card => card.style.display !== 'none');
+                let noResultsMsg = document.getElementById('noResultsMessage');
+                
+                if (visibleCards.length === 0) {
+                    if (!noResultsMsg) {
+                        noResultsMsg = document.createElement('div');
+                        noResultsMsg.id = 'noResultsMessage';
+                        noResultsMsg.className = 'no-results';
+                        noResultsMsg.innerHTML = '<h3>No rooms match your search criteria</h3><p>Try adjusting your filters or search terms</p>';
+                        roomsContainer.appendChild(noResultsMsg);
+                    }
+                } else if (noResultsMsg) {
+                    noResultsMsg.remove();
+                }
+            }
+            
+            // Event listeners
+            searchInput.addEventListener('input', filterRooms);
+            availabilityFilter.addEventListener('change', filterRooms);
+            priceFilter.addEventListener('change', filterRooms);
+            
+            resetFilters.addEventListener('click', function() {
+                searchInput.value = '';
+                availabilityFilter.value = 'all';
+                priceFilter.value = 'all';
+                filterRooms();
+            });
+        });
+    </script>
+</body>
+</html>

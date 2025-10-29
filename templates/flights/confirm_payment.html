@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Booking Confirmed</title>
+  <style>
+    body {
+      background: #f0f5ff;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .ticket {
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+    }
+    h2 { color: #28a745; }
+    .details {
+      background: #f8faff;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    .details p { margin: 6px 0; }
+    .btn {
+      text-decoration: none;
+      color: #fff;
+      background: #007bff;
+      padding: 12px 22px;
+      border-radius: 8px;
+    }
+    .btn:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="ticket">
+    <h2>🎟️ Booking Confirmed!</h2>
+    <p>Thank you for booking .</p>
+
+    <div class="details">
+      <p><strong>Airline:</strong> {{ airline }}</p>
+      <p><strong>From:</strong> {{ source }}</p>
+      <p><strong>To:</strong> {{ destination }}</p>
+      <p><strong>Total Paid:</strong> ₹{{ price }}</p>
+      <p><strong>Seat Number:</strong> {{ seat_number }}</p>
+      <p><strong>Booking ID:</strong> #{{ booking_id }}</p>
+    </div>
+
+    <a href="{% url 'search_flights' %}" class="btn">🔍 Search Another Flight</a>
+  </div>
+</body>
+</html>
