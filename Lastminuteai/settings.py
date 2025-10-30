@@ -11,10 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -130,15 +131,26 @@ AUTH_USER_MODEL = 'app.CustomUser'
 
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'kanteravali3@gmail.com'
-EMAIL_HOST_PASSWORD = 'agsj hbkb fafb tbcw'  
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'kanteravali3@gmail.com'
+# EMAIL_HOST_PASSWORD = 'agsj hbkb fafb tbcw'  
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 #API_NINJAS_KEY= 'wQwO5mm3jrRRRAmX9h4OHw==3aRyeDJ0DuskEzPl'
 AVIATIONSTACK_API_KEY = "dce1573f4a839f781cd704a129edf4e9"
 
-RAPIDAPI_KEY = "667bcb5bffmshb266737d9bd3e73p1c28dajsna4a5bb8c06a7"
+#RAPIDAPI_KEY = "667bcb5bffmshb266737d9bd3e73p1c28dajsna4a5bb8c06a7"
+
+
+
+
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)

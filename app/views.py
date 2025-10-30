@@ -376,7 +376,7 @@ def confirm_payment(request):
 
         p.setTitle("Flight Ticket - SkyFinder")
         p.setFont("Helvetica-Bold", 18)
-        p.drawString(200, height - 80, "✈ SkyFinder - E-Ticket")
+        p.drawString(200, height - 80, "✈ - E-Ticket")
 
         p.setFont("Helvetica", 12)
         y = height - 130
