@@ -58,7 +58,7 @@
     <div class="container">
         <h1>✈️ Flight Booker</h1>
         <p>Find live flights right now</p>
-
+    {{ message }}
        <form method="POST" action="{% url 'search_flights' %}">
     {% csrf_token %}
     <input type="text" name="source" placeholder="Departure (e.g. DEL)" required>

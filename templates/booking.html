@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Bookings</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        /* Search Filters */
+        .search-filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 0 auto 30px;
+            width: 90%;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+            color: #333;
+        }
+        .filter-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1e3c72;
+            text-align: center;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #1e3c72;
+        }
+        .filter-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .btn-filter {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-search {
+            background-color: #1e3c72;
+            color: white;
+        }
+        .btn-search:hover {
+            background-color: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-reset {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-reset:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Table Styling */
+        table {
+            width: 90%;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+            color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+        th {
+            background: #1e3c72;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        .no-booking {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 40px;
+            color: #fff;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-cancel {
+            background-color: #ff4d4d;
+            color: white;
+        }
+        .btn-cancel:hover {
+            background-color: #e60000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-checkin {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-checkin:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-checkout {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-checkout:hover {
+            background-color: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-view {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-view:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-confirmed {
+            background-color: #e7f4e4;
+            color: #2e7d32;
+        }
+        .status-pending {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        .status-checked-in {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        .status-checked-out {
+            background-color: #f5f5f5;
+            color: #424242;
+        }
+        .status-cancelled {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 700px;
+            color: #333;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .image-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .modal-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #1e3c72;
+        }
+        .modal-message {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .proof-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1e3c72;
+            transition: color 0.3s;
+        }
+        .close-btn:hover {
+            color: #ff4d4d;
+        }
+        .image-title {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #1e3c72;
+            font-weight: 600;
+        }
+        .error-message {
+            color: #ff4d4d;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        /* Results Count */
+        .results-count {
+            text-align: center;
+            margin: 15px 0;
+            color: white;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Bookings</h1>
+
+    <!-- Search Filters -->
+    <div class="search-filters">
+        <div class="filter-title">Search Bookings</div>
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="searchId">Booking ID</label>
+                <input type="text" id="searchId" class="filter-input" placeholder="Enter booking ID">
+            </div>
+            <div class="filter-group">
+                <label for="searchName">Guest Name</label>
+                <input type="text" id="searchName" class="filter-input" placeholder="Enter guest name">
+            </div>
+            <div class="filter-group">
+                <label for="searchCheckin">Check-in Date</label>
+                <input type="date" id="searchCheckin" class="filter-input">
+            </div>
+        </div>
+        <div class="filter-buttons">
+            <button class="btn-filter btn-search" id="searchBtn">Search Bookings</button>
+            <button class="btn-filter btn-reset" id="resetBtn">Reset Filters</button>
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-count" id="resultsCount">
+        Showing {{ bookings|length }} booking(s)
+    </div>
+
+    {% if bookings %}
+    <table id="bookingsTable">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Hotel Room</th>
+                <th>Room Number</th>
+                <th>Check-in</th>
+                <th>Check-out(Estimation)</th>
+                <th>Name</th>
+                <th>Number of Persons</th>
+                <th>Status</th>
+                <th>Address Proof</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr class="booking-row" 
+                data-id="{{ booking.id }}"
+                data-name="{{ booking.name|lower }}"
+                data-checkin="{{ booking.check_in|date:'Y-m-d' }}">
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.hotel_room }}</td>
+                <td>{{ booking.hotel_room.room_number }}</td>
+                <td>{{ booking.check_in }}</td>
+                <td>{{ booking.check_out }}</td>
+                <td>{{ booking.name }}</td>
+                <td>{{ booking.num_persons }}</td>
+                <td>
+                    {% if booking.status == 'confirmed' %}
+                        <span class="status-badge status-confirmed">Confirmed</span>
+                    {% elif booking.status == 'pending' %}
+                        <span class="status-badge status-pending">Pending</span>
+                    {% elif booking.status == 'checked_in' %}
+                        <span class="status-badge status-checked-in">Checked In</span>
+                    {% elif booking.status == 'checked_out' %}
+                        <span class="status-badge status-checked-out">Checked Out</span>
+                    {% elif booking.status == 'cancelled' %}
+                        <span class="status-badge status-cancelled">Cancelled</span>
+                    {% else %}
+                        <span class="status-badge status-pending">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if booking.address_proof %}
+                        <button class="btn btn-view" onclick="viewProof('{{ booking.address_proof.url }}', 'Address Proof - {{ booking.name }}')">View Proof</button>
+                    {% else %}
+                        <span>No proof uploaded</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        {% if booking.status != 'cancelled' and booking.status != 'checked_out' %}
+                            <button class="btn btn-cancel" onclick="showCancelModal('{{ booking.id }}', '{{ booking.hotel_room }}')">Cancel Room</button>
+                        {% endif %}
+                        
+                        {% if booking.status == 'confirmed' %}
+                            <button class="btn btn-checkin" onclick="confirmCheckIn('{{ booking.id }}')">Check-in Confirmed</button>
+                        {% elif booking.status == 'checked_in' %}
+                            <button class="btn btn-checkout" onclick="confirmCheckOut('{{ booking.id }}')">Check-out</button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="no-booking">No bookings found.</p>
+    {% endif %}
+
+    <!-- Cancel Confirmation Modal -->
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('cancelModal')">&times;</button>
+            <div class="modal-title">Cancel Booking</div>
+            <div class="modal-message" id="cancelModalMessage">
+                Are you sure you want to cancel your booking for room <span id="roomName"></span>?
+                This action cannot be undone.
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" id="confirmCancelBtn">Yes, Cancel</button>
+                <button class="btn btn-checkout" onclick="closeModal('cancelModal')">No, Keep It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check-in Confirmation Modal -->
+    <div id="checkinModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('checkinModal')">&times;</button>
+            <div class="modal-title">Confirm Check-in</div>
+            <div class="modal-message">
+                Are you sure you want to check in? This will confirm your arrival.
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-checkin" id="confirmCheckinBtn">Yes, Check In</button>
+                <button class="btn btn-cancel" onclick="closeModal('checkinModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check-out Confirmation Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('checkoutModal')">&times;</button>
+            <div class="modal-title">Confirm Check-out</div>
+            <div class="modal-message">
+                Are you sure you want to check out? This will complete your stay.
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-checkout" id="confirmCheckoutBtn">Yes, Check Out</button>
+                <button class="btn btn-cancel" onclick="closeModal('checkoutModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image View Modal -->
+    <div id="imageModal" class="modal">
+        <div class="image-modal-content">
+            <button class="close-btn" onclick="closeModal('imageModal')">&times;</button>
+            <div class="image-title" id="imageTitle">Address Proof</div>
+            <div class="loading" id="imageLoading">Loading image...</div>
+            <img id="proofImage" src="" alt="Address Proof" class="proof-image" style="display: none;">
+            <div class="error-message" id="imageError" style="display: none;">Failed to load image</div>
+            <div class="modal-buttons">
+                <button class="btn btn-checkout" onclick="closeModal('imageModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBookingId = null;
+        let currentRoomName = null;
+
+        // CSRF token for Django (you'll need to set this in your template)
+        const csrfToken = "{{ csrf_token }}";
+
+        // Search functionality
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            filterBookings();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            resetFilters();
+        });
+
+        function filterBookings() {
+            const searchId = document.getElementById('searchId').value.toLowerCase();
+            const searchName = document.getElementById('searchName').value.toLowerCase();
+            const searchCheckin = document.getElementById('searchCheckin').value;
+            
+            const rows = document.querySelectorAll('.booking-row');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const rowId = row.getAttribute('data-id').toLowerCase();
+                const rowName = row.getAttribute('data-name');
+                const rowCheckin = row.getAttribute('data-checkin');
+                
+                const idMatch = !searchId || rowId.includes(searchId);
+                const nameMatch = !searchName || rowName.includes(searchName);
+                const checkinMatch = !searchCheckin || rowCheckin === searchCheckin;
+                
+                if (idMatch && nameMatch && checkinMatch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('resultsCount').textContent = `Showing ${visibleCount} booking(s)`;
+        }
+
+        function resetFilters() {
+            document.getElementById('searchId').value = '';
+            document.getElementById('searchName').value = '';
+            document.getElementById('searchCheckin').value = '';
+            
+            const rows = document.querySelectorAll('.booking-row');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+            
+            document.getElementById('resultsCount').textContent = `Showing ${rows.length} booking(s)`;
+        }
+
+        function showCancelModal(bookingId, roomName) {
+            currentBookingId = bookingId;
+            currentRoomName = roomName;
+            document.getElementById('roomName').textContent = roomName;
+            document.getElementById('cancelModal').style.display = 'flex';
+        }
+
+        function confirmCheckIn(bookingId) {
+            currentBookingId = bookingId;
+            document.getElementById('checkinModal').style.display = 'flex';
+        }
+
+        function confirmCheckOut(bookingId) {
+            currentBookingId = bookingId;
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function viewProof(imageSrc, title) {
+            const imageModal = document.getElementById('imageModal');
+            const proofImage = document.getElementById('proofImage');
+            const imageLoading = document.getElementById('imageLoading');
+            const imageError = document.getElementById('imageError');
+            
+            // Reset state
+            proofImage.style.display = 'none';
+            imageError.style.display = 'none';
+            imageLoading.style.display = 'block';
+            
+            // Set title and show modal
+            document.getElementById('imageTitle').textContent = title;
+            imageModal.style.display = 'flex';
+            
+            // Load image
+            proofImage.onload = function() {
+                imageLoading.style.display = 'none';
+                proofImage.style.display = 'block';
+            };
+            
+            proofImage.onerror = function() {
+                imageLoading.style.display = 'none';
+                imageError.style.display = 'block';
+            };
+            
+            proofImage.src = imageSrc;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Set up event listeners for confirmation buttons
+        document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+            cancelBooking();
+        });
+
+        document.getElementById('confirmCheckinBtn').addEventListener('click', function() {
+            processCheckIn();
+        });
+
+        document.getElementById('confirmCheckoutBtn').addEventListener('click', function() {
+            processCheckOut();
+        });
+
+        function cancelBooking() {
+            // Send AJAX request to cancel the booking
+            fetch(`/bookings/${currentBookingId}/cancel/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Booking for room ${currentRoomName} has been cancelled.`);
+                    closeModal('cancelModal');
+                    // Reload the page to reflect changes
+                    location.reload();
+                } else {
+                    alert('Error cancelling booking: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error cancelling booking. Please try again.');
+            });
+        }
+
+        function processCheckIn() {
+            // Send AJAX request to confirm check-in
+            fetch(`/bookings/${currentBookingId}/checkin/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Check-in confirmed for booking ${currentBookingId}.`);
+                    closeModal('checkinModal');
+                    // Reload the page to reflect changes
+                    location.reload();
+                } else {
+                    alert('Error confirming check-in: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error confirming check-in. Please try again.');
+            });
+        }
+
+        function processCheckOut() {
+            // Send AJAX request to process check-out
+            fetch(`/bookings/${currentBookingId}/checkout/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Check-out completed for booking ${currentBookingId}.`);
+                    closeModal('checkoutModal');
+                    // Reload the page to reflect changes
+                    location.reload();
+                } else {
+                    alert('Error processing check-out: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error processing check-out. Please try again.');
+            });
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let modal of modals) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

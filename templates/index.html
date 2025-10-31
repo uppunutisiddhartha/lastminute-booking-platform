@@ -6,32 +6,23 @@
   <title>LastMinute.ai – Book Last Minute Flights & Hotels</title>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     :root {
-      --skyjet-blue: #0077FF;
-      --skyjet-blue-light: #4da0ff;
-      --midnight-navy: #0B1D3A;
-      --midnight-navy-light: #1a2f57;
-      --sunset-coral: #FF6B4A;
-      --sunset-coral-light: #ff8e75;
-      --emerald-green: #00C48C;
-      --emerald-green-light: #33d0a3;
-      --amber-glow: #FFB200;
-      --amber-glow-light: #ffc233;
-      --deep-red: #E74C3C;
-      --deep-red-light: #ec6f62;
-      --light-bg: #f7f9fc;
+      --primary-blue: #2563eb;
+      --primary-blue-light: #3b82f6;
+      --dark-navy: #1e293b;
+      --accent-green: #10b981;
+      --accent-orange: #f59e0b;
+      --light-bg: #f8fafc;
       --card-bg: #ffffff;
-      --text-dark: #333333;
-      --text-light: #6c757d;
-      --border-radius: 16px;
-      --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-      --transition: all 0.3s ease;
-      --font-heading: 'Poppins', sans-serif;
-      --font-body: 'Inter', sans-serif;
+      --text-dark: #334155;
+      --text-light: #64748b;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --transition: all 0.2s ease;
     }
 
     * {
@@ -41,60 +32,56 @@
     }
 
     body {
-      font-family: var(--font-body);
+      font-family: 'Inter', sans-serif;
       background: var(--light-bg);
       color: var(--text-dark);
       line-height: 1.6;
     }
 
     header {
-      background-color: var(--midnight-navy);
+      background-color: var(--dark-navy);
       color: white;
-      padding: 18px 40px;
+      padding: 16px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .logo-icon {
-      font-size: 1.8rem;
-      color: var(--amber-glow);
+      font-size: 1.5rem;
+      color: var(--accent-orange);
     }
 
     header h1 {
-      font-family: var(--font-heading);
       margin: 0;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 700;
     }
 
     nav {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 20px;
     }
 
     nav a {
       color: white;
       text-decoration: none;
       font-weight: 500;
-      font-size: 0.95rem;
-      padding: 8px 16px;
-      border-radius: 6px;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-radius: 4px;
       transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     nav a:hover {
@@ -102,223 +89,183 @@
     }
 
     .nav-btn {
-      background-color: var(--skyjet-blue);
-      padding: 10px 20px;
-      border-radius: 8px;
+      background-color: var(--primary-blue);
+      padding: 8px 16px;
+      border-radius: 4px;
     }
 
     .nav-btn:hover {
-      background-color: var(--skyjet-blue-light);
+      background-color: var(--primary-blue-light);
     }
 
     .hero {
-      background: linear-gradient(135deg, var(--skyjet-blue) 0%, var(--midnight-navy) 100%);
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-navy) 100%);
       color: white;
-      padding: 100px 40px 120px;
+      padding: 80px 40px;
       text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.05"><polygon points="0,0 1000,50 1000,100 0,100"/></svg>');
-      background-size: cover;
     }
 
     .hero-content {
-      max-width: 800px;
+      max-width: 700px;
       margin: 0 auto;
-      position: relative;
-      z-index: 1;
     }
 
     .hero h2 {
-      font-family: var(--font-heading);
-      font-size: 3.2rem;
-      margin-bottom: 20px;
-      font-weight: 800;
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+      font-weight: 700;
       line-height: 1.2;
     }
 
     .hero p {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       margin-bottom: 30px;
       opacity: 0.9;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .hero-badges {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 30px;
-      flex-wrap: wrap;
-    }
-
-    .hero-badge {
-      background: rgba(255, 255, 255, 0.15);
-      padding: 8px 18px;
-      border-radius: 30px;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      backdrop-filter: blur(10px);
     }
 
     .search-container {
-      max-width: 1000px;
-      margin: -60px auto 60px;
+      max-width: 900px;
+      margin: -40px auto 40px;
       padding: 0 20px;
     }
 
     .search-box {
       background: var(--card-bg);
-      padding: 30px;
+      padding: 24px;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 16px;
       align-items: flex-end;
     }
 
     .search-tabs {
       display: flex;
       width: 100%;
-      border-bottom: 1px solid #eee;
-      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 16px;
     }
 
     .search-tab {
-      padding: 12px 24px;
+      padding: 10px 20px;
       font-weight: 600;
       cursor: pointer;
-      border-bottom: 3px solid transparent;
+      border-bottom: 2px solid transparent;
       transition: var(--transition);
     }
 
     .search-tab.active {
-      color: var(--skyjet-blue);
-      border-bottom: 3px solid var(--skyjet-blue);
+      color: var(--primary-blue);
+      border-bottom: 2px solid var(--primary-blue);
     }
 
     .search-field {
       flex: 1;
-      min-width: 200px;
+      min-width: 180px;
     }
 
     .search-field label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 500;
       color: var(--text-light);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .search-field input,
     .search-field select {
       width: 100%;
-      padding: 14px 16px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-family: var(--font-body);
-      font-size: 1rem;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
       transition: var(--transition);
     }
 
     .search-field input:focus,
     .search-field select:focus {
       outline: none;
-      border-color: var(--skyjet-blue);
-      box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.1);
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
     }
 
     .search-btn {
-      background-color: var(--skyjet-blue);
+      background-color: var(--primary-blue);
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 14px 30px;
-      font-family: var(--font-body);
+      border-radius: 4px;
+      padding: 12px 24px;
+      font-family: 'Inter', sans-serif;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: var(--transition);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .search-btn:hover {
-      background-color: var(--skyjet-blue-light);
-      transform: translateY(-2px);
+      background-color: var(--primary-blue-light);
     }
 
     .quick-links {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 16px;
       margin: 30px 0;
       flex-wrap: wrap;
     }
 
     .quick-link {
       background: var(--card-bg);
-      padding: 16px 24px;
+      padding: 14px 20px;
       border-radius: var(--border-radius);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--box-shadow);
       text-decoration: none;
       color: var(--text-dark);
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       transition: var(--transition);
     }
 
     .quick-link:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
     }
 
     .quick-link.flight {
-      border-left: 4px solid var(--skyjet-blue);
+      border-left: 3px solid var(--primary-blue);
     }
 
     .quick-link.hotel {
-      border-left: 4px solid var(--emerald-green);
+      border-left: 3px solid var(--accent-green);
     }
 
     .section-title {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
     .section-title h2 {
-      font-family: var(--font-heading);
-      font-size: 2.2rem;
-      margin-bottom: 12px;
-      color: var(--midnight-navy);
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: var(--dark-navy);
     }
 
     .section-title p {
       color: var(--text-light);
-      max-width: 600px;
+      max-width: 500px;
       margin: 0 auto;
     }
 
     .recommendations {
-      padding: 60px 40px;
-      max-width: 1200px;
+      padding: 50px 40px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
@@ -326,12 +273,12 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 25px;
+      gap: 20px;
     }
 
     .card {
       background: var(--card-bg);
-      width: 300px;
+      width: 280px;
       padding: 0;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
@@ -342,169 +289,132 @@
     }
 
     .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     }
 
     .card-image {
-      height: 160px;
-      background: linear-gradient(135deg, var(--skyjet-blue), var(--amber-glow));
+      height: 140px;
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
       position: relative;
     }
 
     .card.flight .card-image {
-      background: linear-gradient(135deg, var(--skyjet-blue), var(--skyjet-blue-light));
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
     }
 
     .card.hotel .card-image {
-      background: linear-gradient(135deg, var(--emerald-green), var(--emerald-green-light));
+      background: linear-gradient(135deg, var(--accent-green), #34d399);
     }
 
     .card-image i {
       position: absolute;
-      bottom: 15px;
-      right: 15px;
-      font-size: 3rem;
+      bottom: 12px;
+      right: 12px;
+      font-size: 2.2rem;
       opacity: 0.2;
     }
 
     .card-content {
-      padding: 20px;
+      padding: 18px;
     }
 
     .card h3 {
-      font-family: var(--font-heading);
-      margin: 0 0 10px 0;
-      font-size: 1.3rem;
+      margin: 0 0 8px 0;
+      font-size: 1.2rem;
     }
 
     .card p {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       color: var(--text-light);
+      font-size: 0.9rem;
     }
 
     .price {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      color: var(--midnight-navy);
+      color: var(--dark-navy);
       margin-bottom: 5px;
     }
 
     .badge {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      background: var(--amber-glow);
+      top: 12px;
+      right: 12px;
+      background: var(--accent-orange);
       color: black;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
       font-weight: 600;
-      animation: pulse 2s infinite;
     }
 
     .ai-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(0, 196, 140, 0.1);
-      color: var(--emerald-green);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
+      gap: 4px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-green);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
       font-weight: 600;
-      margin-top: 10px;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+      margin-top: 8px;
     }
 
     .features {
-      background: var(--midnight-navy);
+      background: var(--dark-navy);
       color: white;
-      padding: 80px 40px;
+      padding: 60px 40px;
       text-align: center;
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
     .feature {
-      padding: 30px 20px;
+      padding: 24px 16px;
     }
 
     .feature-icon {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      color: var(--amber-glow);
+      font-size: 2rem;
+      margin-bottom: 16px;
+      color: var(--accent-orange);
     }
 
     .feature h3 {
-      font-family: var(--font-heading);
-      margin-bottom: 15px;
-      font-size: 1.4rem;
+      margin-bottom: 12px;
+      font-size: 1.2rem;
     }
 
     .feature p {
       opacity: 0.8;
-    }
-
-    /* Floating Chat Assistant */
-    .chat-assistant {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: white;
-      border: 2px solid var(--skyjet-blue);
-      border-radius: 50%;
-      width: 65px;
-      height: 65px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 5px 20px rgba(0, 119, 255, 0.3);
-      cursor: pointer;
-      transition: var(--transition);
-      z-index: 99;
-    }
-
-    .chat-assistant:hover {
-      transform: scale(1.1);
-      box-shadow: 0 8px 25px rgba(0, 119, 255, 0.4);
-    }
-
-    .chat-assistant i {
-      font-size: 1.5rem;
-      color: var(--skyjet-blue);
+      font-size: 0.9rem;
     }
 
     footer {
-      background: var(--midnight-navy);
-      color: #ccc;
-      padding: 60px 40px 30px;
+      background: var(--dark-navy);
+      color: #cbd5e1;
+      padding: 50px 40px 20px;
     }
 
     .footer-content {
-      max-width: 1200px;
+      max-width: 1000px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 40px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 30px;
     }
 
     .footer-column h3 {
-      font-family: var(--font-heading);
       color: white;
-      margin-bottom: 20px;
-      font-size: 1.2rem;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
     }
 
     .footer-column ul {
@@ -512,13 +422,14 @@
     }
 
     .footer-column ul li {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .footer-column a {
-      color: #aaa;
+      color: #94a3b8;
       text-decoration: none;
       transition: var(--transition);
+      font-size: 0.9rem;
     }
 
     .footer-column a:hover {
@@ -527,111 +438,23 @@
 
     .footer-bottom {
       text-align: center;
-      margin-top: 50px;
+      margin-top: 40px;
       padding-top: 20px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.85rem;
     }
 
-    /* New Enhancements */
     .user-welcome {
-      color: var(--amber-glow);
+      color: var(--accent-orange);
       font-weight: 600;
       margin-right: 10px;
-    }
-    
-    .stats-section {
-      padding: 60px 40px;
-      background: var(--light-bg);
-      text-align: center;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 30px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    
-    .stat-item {
-      background: var(--card-bg);
-      padding: 30px 20px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-    }
-    
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--skyjet-blue);
-      margin-bottom: 10px;
-    }
-    
-    .stat-label {
-      color: var(--text-light);
-      font-weight: 500;
-    }
-    
-    .testimonials {
-      padding: 80px 40px;
-      background: white;
-    }
-    
-    .testimonial-cards {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .testimonial-card {
-      background: var(--card-bg);
-      padding: 30px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      max-width: 350px;
-    }
-    
-    .testimonial-text {
-      font-style: italic;
-      margin-bottom: 20px;
-      color: var(--text-dark);
-    }
-    
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    
-    .author-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: var(--skyjet-blue);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-    }
-    
-    .author-info h4 {
-      margin-bottom: 5px;
-    }
-    
-    .author-info p {
-      color: var(--text-light);
-      font-size: 0.9rem;
     }
 
     @media (max-width: 768px) {
       header {
-        padding: 15px 20px;
+        padding: 12px 20px;
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
       }
       
       nav {
@@ -641,15 +464,15 @@
       }
       
       .hero {
-        padding: 80px 20px 100px;
+        padding: 60px 20px;
       }
       
       .hero h2 {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
       }
       
       .search-box {
-        padding: 20px;
+        padding: 18px;
       }
       
       .search-field {
@@ -657,19 +480,11 @@
       }
       
       .recommendations {
-        padding: 40px 20px;
+        padding: 30px 20px;
       }
       
       .features {
-        padding: 60px 20px;
-      }
-      
-      .stats-section {
         padding: 40px 20px;
-      }
-      
-      .testimonials {
-        padding: 60px 20px;
       }
     }
   </style>
@@ -700,13 +515,8 @@
 
   <section class="hero">
     <div class="hero-content">
-      <h2>AI-Powered Last-Minute Travel Deals</h2>
-      <p>Book hotels and flights instantly with smart AI recommendations. Save up to 60% on last-minute bookings.</p>
-      <div class="hero-badges">
-        <div class="hero-badge"><i class="fas fa-check-circle"></i> Real-time Availability</div>
-        <div class="hero-badge"><i class="fas fa-bolt"></i> Instant Confirmation</div>
-        <div class="hero-badge"><i class="fas fa-shield-alt"></i> Secure Booking</div>
-      </div>
+      <h2>Smart Last-Minute Travel Deals</h2>
+      <p>Find the best prices on flights and hotels with AI-powered recommendations.</p>
     </div>
   </section>
 
@@ -765,35 +575,10 @@
     {% endif %}
   </div>
 
-  <section class="stats-section">
-    <div class="section-title">
-      <h2>Trusted by Travelers Worldwide</h2>
-      <p>Our AI platform has revolutionized last-minute travel booking</p>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-number">500K+</div>
-        <div class="stat-label">Happy Travelers</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">60%</div>
-        <div class="stat-label">Average Savings</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">24/7</div>
-        <div class="stat-label">AI Support</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">50+</div>
-        <div class="stat-label">Destinations</div>
-      </div>
-    </div>
-  </section>
-
   <section class="recommendations">
     <div class="section-title">
-      <h2>Today's Best Picks</h2>
-      <p>Curated by our AI based on real-time availability and best value</p>
+      <h2>Today's Best Deals</h2>
+      <p>Curated by our AI based on real-time availability</p>
     </div>
     <div class="cards">
       <div class="card flight">
@@ -801,7 +586,7 @@
           <i class="fas fa-plane"></i>
         </div>
         <div class="card-content">
-          <span class="badge">⏱️ Limited Time</span>
+          <span class="badge">Limited Time</span>
           <h3>New York to London</h3>
           <p class="price">$350</p>
           <p>Non-stop • 6h 45m • Today</p>
@@ -816,7 +601,7 @@
           <i class="fas fa-hotel"></i>
         </div>
         <div class="card-content">
-          <span class="badge" style="background: var(--sunset-coral);">🔥 Hot Deal</span>
+          <span class="badge" style="background: var(--accent-green);">Hot Deal</span>
           <h3>Paris 4★ Hotel</h3>
           <p class="price">$189</p>
           <p>2 nights • City Center • Free WiFi</p>
@@ -831,7 +616,7 @@
           <i class="fas fa-plane"></i>
         </div>
         <div class="card-content">
-          <span class="badge" style="background: var(--emerald-green);">💚 Eco-Friendly</span>
+          <span class="badge" style="background: var(--primary-blue);">Eco-Friendly</span>
           <h3>LA to Tokyo</h3>
           <p class="price">$620</p>
           <p>1 stop • 13h 20m • Tomorrow</p>
@@ -843,57 +628,10 @@
     </div>
   </section>
 
-  <section class="testimonials">
-    <div class="section-title">
-      <h2>What Our Travelers Say</h2>
-      <p>Real experiences from our satisfied customers</p>
-    </div>
-    <div class="testimonial-cards">
-      <div class="testimonial-card">
-        <div class="testimonial-text">
-          "LastMinute.ai saved me over $300 on a last-minute flight to Barcelona. The AI found options I would never have considered!"
-        </div>
-        <div class="testimonial-author">
-          <div class="author-avatar">SR</div>
-          <div class="author-info">
-            <h4>Sarah Johnson</h4>
-            <p>Frequent Traveler</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="testimonial-card">
-        <div class="testimonial-text">
-          "I was skeptical about AI travel booking, but the hotel recommendations were perfect. Exactly what I needed for my business trip."
-        </div>
-        <div class="testimonial-author">
-          <div class="author-avatar">MR</div>
-          <div class="author-info">
-            <h4>Michael Rodriguez</h4>
-            <p>Business Consultant</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="testimonial-card">
-        <div class="testimonial-text">
-          "The instant booking feature is a game-changer. I booked my entire vacation in under 5 minutes while waiting for my flight!"
-        </div>
-        <div class="testimonial-author">
-          <div class="author-avatar">EP</div>
-          <div class="author-info">
-            <h4>Emily Parker</h4>
-            <p>Adventure Seeker</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="features">
     <div class="section-title">
       <h2>Why Choose LastMinute.ai</h2>
-      <p>Our AI technology revolutionizes last-minute travel booking</p>
+      <p>Our technology makes last-minute travel simple and affordable</p>
     </div>
     <div class="features-grid">
       <div class="feature">
@@ -901,42 +639,37 @@
           <i class="fas fa-brain"></i>
         </div>
         <h3>Smart AI Matching</h3>
-        <p>Our algorithm finds the best deals based on your preferences and real-time availability.</p>
+        <p>Finds the best deals based on your preferences and availability.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">
           <i class="fas fa-bolt"></i>
         </div>
         <h3>Instant Booking</h3>
-        <p>Book in seconds with our streamlined process and get instant confirmation.</p>
+        <p>Book in seconds with our streamlined process.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">
           <i class="fas fa-percentage"></i>
         </div>
         <h3>Best Price Guarantee</h3>
-        <p>We guarantee you'll get the best prices on last-minute flights and hotels.</p>
+        <p>We guarantee you'll get the best prices on last-minute travel.</p>
       </div>
       <div class="feature">
         <div class="feature-icon">
           <i class="fas fa-headset"></i>
         </div>
         <h3>24/7 Support</h3>
-        <p>Our travel experts are available around the clock to assist you.</p>
+        <p>Our travel experts are available around the clock.</p>
       </div>
     </div>
   </section>
-
-  <!-- Floating Chat Assistant -->
-  <div class="chat-assistant" title="Ask our AI Assistant">
-    <i class="fas fa-comment-dots"></i>
-  </div>
 
   <footer>
     <div class="footer-content">
       <div class="footer-column">
         <h3>LastMinute.ai</h3>
-        <p>AI-powered travel platform for last-minute flight and hotel bookings at the best prices.</p>
+        <p>AI-powered travel platform for last-minute flight and hotel bookings.</p>
       </div>
       <div class="footer-column">
         <h3>Quick Links</h3>
@@ -953,7 +686,6 @@
           <li><a href="#">Help Center</a></li>
           <li><a href="#">Contact Us</a></li>
           <li><a href="#">FAQs</a></li>
-          <li><a href="#">Cancellation Policy</a></li>
         </ul>
       </div>
       <div class="footer-column">
@@ -961,7 +693,6 @@
         <ul>
           <li><a href="#">Terms of Service</a></li>
           <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Cookie Policy</a></li>
         </ul>
       </div>
     </div>

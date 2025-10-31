@@ -56,6 +56,7 @@
   </head>
   <body>
     <div class="container">
+      {{ message }}
       <div class="room-info">
         <h2>Book Room: {{ room.room_number }} ({{ room.room_type }})</h2>
         {% if room.image %}
@@ -73,6 +74,8 @@
         <label>Check-out Date:</label>
         <input type="date" name="check_out" required />
 
+        <label>FUll Name:</label>
+        <input type="text" name="name" required>
         <label>Number of Persons:</label>
         <input
           type="number"

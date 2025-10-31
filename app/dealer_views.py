@@ -238,7 +238,19 @@ def edit_room(request, room_id):
 
 
 
-def bookings(requests):
-    return render(requests, "booking.html")
 
+def bookings(request):
+    if request.user.role != 'dealer':
+         messages.error(request, "Access denied. Only dealers can view bookings.")
+         return redirect('rolelogin')
+    # dealer_rooms = HotelRoom.objects.filter(hotel__dealer=request.user)
+    dealer = Dealer.objects.get(user=request.user)
+    # Get all bookings for those rooms
+    dealer_rooms = HotelRoom.objects.filter(hotel__dealer=dealer)
+    bookings = Booking.objects.filter(hotel_room__in=dealer_rooms).select_related('hotel_room', 'user')
+
+    context = {
+        'bookings': bookings
+    }
+    return render(request, "booking.html",context)
 

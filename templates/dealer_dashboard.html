@@ -1,96 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF="8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dealer Dashboard</title>
+    <title>Dealer Dashboard | LastMinute.ai</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /*
+         * DASHBOARD STYLES
+         * Focus: Clean, professional, and well-organized grid layout.
+         */
+        :root {
+            --primary-color: #0077FF; /* Blue for LastMinute.ai branding */
+            --primary-dark: #005bb7;
+            --secondary-color: #00C48C; /* Green for success/money */
+            --bg-light: #f4f6f9;
+            --text-dark: #212529;
+            --text-medium: #6c757d;
+            --card-bg: #ffffff;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+            --font-body: 'Arial', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font-family: var(--font-body);
+            background-color: var(--bg-light);
             margin: 0;
             padding: 0;
-            color: #333;
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar {
+            width: 250px;
+            background-color: var(--text-dark); /* Dark sidebar */
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* Prevents sidebar from shrinking */
+        }
+
+        .sidebar h2 {
+            font-size: 1.4rem;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: #ddd;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-dark);
+            color: white;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        /* --- MAIN CONTENT AREA --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
         }
 
         header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
-            text-align: center;
+            background-color: var(--card-bg);
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+        
+        /* --- STATS TILES (The main inputs) --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
-        h1, h2 {
+        .stat-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border-bottom: 4px solid var(--primary-color);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 10px 0;
+        }
+        
+        .stat-card i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            float: right;
+        }
+
+        /* --- MAIN SECTION GRIDS --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Two columns: Main list and details/summary */
+            gap: 30px;
+        }
+
+        .section-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        .section-card h2 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
             margin-bottom: 20px;
+            color: var(--primary-dark);
         }
 
+        /* --- HOTEL LISTING --- */
         .hotel-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-light);
         }
 
         .hotel-card h3 {
-            margin-top: 0;
-            color: #4CAF50;
+            margin: 0;
+            color: var(--primary-dark);
+            font-size: 1.2rem;
         }
 
+        .hotel-details p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            color: var(--text-medium);
+        }
+        
+        .hotel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* --- BUTTONS --- */
         .button {
-            display: inline-block;
-            padding: 10px 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
             font-size: 14px;
-            border-radius: 8px;
-            background-color: #4CAF50;
+            border-radius: 6px;
+            background-color: var(--primary-color);
             color: #fff;
             text-decoration: none;
-            margin-top: 10px;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .button.secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .button.add-new {
+            background-color: var(--secondary-color);
+            margin-bottom: 20px;
+            width: 100%;
+            justify-content: center;
         }
 
         .button:hover {
-            background-color: #3e8e41;
+            background-color: var(--primary-dark);
+        }
+        
+        .button.secondary:hover {
+            background-color: #00a07a;
         }
 
         .empty-state {
             text-align: center;
-            padding: 50px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            color: var(--text-medium);
+            border: 1px dashed #ccc;
+            border-radius: var(--border-radius);
+        }
+        
+        .empty-state i {
+            font-size: 2.5rem;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .mobile{
+            display: none;
+        }
+        @media (max-width: 980px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                padding: 10px 0;
+                flex-direction: row;
+                justify-content: space-around;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .sidebar h2 {
+                display: none;
+            }
+            .nav-link {
+                display: none;
+            }
+            .nav-link.active {
+                border-left: none;
+                border-bottom: 3px solid var(--secondary-color);
+            }
+            .mobile h6{
+                color: red;
+            }
+            .dashboard-grid{
+                display: none;
+            }
+           .empty-state a {
+                display: none;
+            }
+
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Dealer Dashboard</h1>
-    </header>
- <a href="{% url 'add_hotel' %}" class="button">Add Your First Hotel</a>
-    <div class="container">
-        <h2>Your Hotels</h2>
-
-        {% if hotels %}
-            {% for hotel in hotels %}
-            <div class="hotel-card">
-                <h3>{{ hotel.name }}</h3>
-                <p><strong>Location:</strong> {{ hotel.location }}</p>
-                <p><strong>Floors:</strong> {{ hotel.floor_count }}</p>
-                <p>{{ hotel.description|default:"No description provided." }}</p>
-                <a href="{% url 'manage_rooms' hotel.id %}" class="button">Manage Rooms</a>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="d">
-                <p>You haven’t added any hotels yet.</p>
-                <a href="{% url 'add_hotel' %}" class="button">Add Your First Hotel</a>
-            </div>
-        {% endif %}
+    <div class="sidebar">
+        <h2>LastMinute.ai</h2>
+        <a href="#overview" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="#hotels" class="nav-link"><i class="fas fa-hotel"></i> My Hotels</a>
+        <a href="#rooms" class="nav-link"><i class="fas fa-door-open"></i> Manage Rooms</a>
+        <a href="#bookings" class="nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+        <a href="#performance" class="nav-link"><i class="fas fa-chart-line"></i> Performance</a>
+        <a href="{% url 'logout' %}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
-</body>
+
+    <div class="main-content">
+        <header>
+            <h1>Welcome, {{ user.name }}</h1>
+            <a href="{% url 'add_hotel' %}" class="button secondary"><i class="fas fa-plus-circle"></i> Add New Hotel</a>
+            
+        </header>
+
+        <div class="stats-grid" id="overview">
+            <div class="stat-card">
+                <i class="fas fa-dollar-sign"></i>
+                <h3>Monthly Revenue (Est.)</h3>
+                <div class="value">$12,500</div>
+                <p style="color: var(--secondary-color); font-weight: 600;">+12% vs last month</p>
+            </div>
+            <div class="stat-card" style="border-bottom: 4px solid var(--secondary-color);">
+                <i class="fas fa-door-open" style="color: var(--secondary-color);"></i>
+                <h3>Rooms Available Today</h3>
+                <div class="value">{{ total_rooms }}</div>
+                <p style="color: var(--text-medium);">Occupancy</p>
+            </div>
+            <div class="stat-card" style="border-bottom: 4px solid #FFB200;">
+                <i class="fas fa-calendar-alt" style="color: #FFB200;"></i>
+                <h3>Upcoming Bookings</h3>
+                <div class="value">28</div>
+                <p style="color: var(--text-medium);">In the next 7 days</p>
+            </div>
+            <div class="stat-card" style="border-bottom: 4px solid #E74C3C;">
+                <i class="fas fa-star" style="color: #E74C3C;"></i>
+                <h3>Average Rating</h3>
+                <div class="value">4.6</div>
+                <p style="color: var(--text-medium);">From 120 reviews</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="section-card" id="hotels">
+                <h2><i class="fas fa-hotel"></i> Your Current Properties</h2>
+                
+                {% if hotels %}
+                    {% for hotel in hotels %}
+                    <div class="hotel-card">
+                        <div class="hotel-details">
+                            <h3>{{ hotel.name }}</h3>
+                            <p><strong>Location:</strong> {{ hotel.location }}</p>
+                            <p><strong>Floors:</strong> {{ hotel.floor_count }} | Rooms: <span>{{ hotel.room_count_placeholder|default:"N/A" }}</span></p>
+                        </div>
+                        <div class="hotel-actions">
+                            <a href="{% url 'manage_rooms' hotel.id %}" class="button secondary">
+                                <i class="fas fa-door-open"></i> Manage Rooms
+                            </a>
+                            <a href="" class="button" style="background-color: #FFB200;">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-hotel"></i>
+                        <p>You haven’t added any properties yet. Get started now!</p>
+                        <a href="{% url 'add_hotel' %}" class="button secondary" style="margin-top: 15px;">
+                            <i class="fas fa-plus-circle"></i> Add Your First Hotel
+                        </a>
+                    </div>
+                   
+                {% endif %}
+            </div>
+
+            <div class="right-column">
+                
+                <!-- <div class="section-card" id="rooms">
+                    <h2><i class="fas fa-chart-pie"></i> Inventory Quick Stats</h2>
+                    <p style="font-size: 0.95rem; margin-bottom: 15px;">**Total Rooms:** <span style="font-weight: 700;">150</span></p>
+                    <ul>
+                        <li style="margin-bottom: 8px; font-size: 0.9rem;">**Standard Rooms:** 60 available (8 booked)</li>
+                        <li style="margin-bottom: 8px; font-size: 0.9rem;">**Deluxe Rooms:** 25 available (5 booked)</li>
+                        <li style="margin-bottom: 8px; font-size: 0.9rem;">**Suites:** 10 available (2 booked)</li>
+                    </ul>
+                    <a href="" class="button add-new" style="margin-top: 20px;">
+                        <i class="fas fa-plus"></i> Add New Room Type
+                    </a>
+                </div> -->
+
+                <div class="section-card" id="bookings">
+                    <h2><i class="fas fa-clock"></i> Latest Last-Minute Bookings</h2>
+                    <a href="{% url 'bookings' %}" class="button" style="width: 100%; justify-content: center; background-color: #6c757d;">
+                        View All Bookings
+                    </a>
+                </div>
+                
+            </div> 
+        </div>
+     </div>
+<div class="mobile">
+        <h6>
+            sorry this cannot handle in small screens please use large screens, for you safty
+        </h6>
+</div>
+    </body>
 </html>

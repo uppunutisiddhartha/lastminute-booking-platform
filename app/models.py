@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
-
+import uuid
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ('dealer', 'Dealer'),
@@ -91,9 +91,17 @@ class Booking(models.Model):
     hotel_room = models.ForeignKey(HotelRoom, on_delete=models.CASCADE)
     check_in = models.DateField()
     check_out = models.DateField()
-    
+    name=models.CharField(max_length=50)
+    Booking_id=models.IntegerField(unique=True , editable=False)
     num_persons = models.PositiveIntegerField(default=1)
-    address_proof = models.FileField(upload_to='address_proofs/')
+    address_proof = models.FileField(upload_to='address_proofs/', null=True, blank=True)
+    
+    # auto generation for booking id which is uniqe 
+    def save(self, *args, **kwargs):
+        if not self.booking_id:
+            self.booking_id = f"BK{uuid.uuid4().hex[:6].upper()}"
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"Booking for {self.hotel_room} from {self.check_in} to {self.check_out}"
