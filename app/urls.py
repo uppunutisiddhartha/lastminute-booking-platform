@@ -25,6 +25,8 @@ urlpatterns = [
    path('flight_checkout',views.flight_checkout,name="flight_checkout"),
 path("confirm-payment/", views.confirm_payment, name="confirm_payment"),
 
+path('support',views.support,name="support")
+
 
 
 ]

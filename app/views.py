@@ -10,6 +10,8 @@ from datetime import datetime
 from django.utils import timezone
 import requests
 import random
+from reportlab.pdfgen import canvas
+from django.core.mail import EmailMessage
 from reportlab.lib.pagesizes import A4  #for the pdf pip install reportlab
 
 
@@ -346,16 +348,6 @@ def flight_checkout(request):
     return redirect("search_flights")
 
 
-import random
-import io
-from django.core.mail import EmailMessage
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Flight_Booking  # make sure your model import path is correct
-
 
 @login_required(login_url='login')
 def confirm_payment(request):
@@ -474,3 +466,7 @@ def confirm_payment(request):
         return render(request, "flights/confirm_payment.html", context)
 
     return redirect("search_flights")
+
+
+def support(request):
+    return render(request,"support/support.html")

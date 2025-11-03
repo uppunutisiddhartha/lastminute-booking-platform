@@ -166,3 +166,26 @@ class Flight_Booking(models.Model):
 
     def __str__(self):
         return f"{self.passenger_name} - {self.flight_name} ({self.source} → {self.destination})"
+
+
+
+
+#support 
+class support_chat(models.Model):
+    Chat_status=(
+        ('pending','penging'),
+        ('Resolved','Resolved'),
+    )
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    requested_date=models.DateTimeField()
+    TimeDuration=models.DurationField()
+    Chat_reference_number=models.CharField(max_length=10,blank=False,unique=True)
+    Chat_status=models.CharField(max_length=10,choices=Chat_status,blank=False)
+    
+    def save(self, *args, **kwargs):
+        if not self.Chat_reference_number:
+            self.Chat_reference_number = f"Chat{uuid.uuid4().hex[:7].upper()}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user}-{self._state}-{self.Chat_reference_number}"

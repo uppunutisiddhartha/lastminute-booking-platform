@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lastminute Booking Platform</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f9fafc;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        main {
+            text-align: center;
+            padding: 40px;
+        }
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 40px;
+        }
+
+        /* Chat Button */
+        .chat-launcher {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .chat-launcher:hover {
+            background-color: #0056b3;
+        }
+
+        /* Chat Window */
+        .chat-box {
+            position: fixed;
+            bottom: 90px;
+            right: 25px;
+            width: 380px;
+            height: 500px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+        }
+        .chat-header {
+            background: linear-gradient(45deg, #007bff, #00b4d8);
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-close {
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        iframe.chat-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to Lastminute Booking Platform</h1>
+</header>
+
+<main>
+    <h2>Find & Book Flights Instantly ✈️</h2>
+    <p>Need help? Our assistant is available 24/7.</p>
+</main>
+
+<footer>
+    <p>© 2025 Lastminute Booking Platform. All rights reserved.</p>
+</footer>
+
+<!-- Custom Chat Assistant -->
+<button class="chat-launcher" id="openChat">💬 Chat with us</button>
+
+<div class="chat-box" id="chatBox">
+    <div class="chat-header">
+        Flight Booking Support
+        <span class="chat-close" id="closeChat">&times;</span>
+    </div>
+    <!-- Embed Tawk.to in an iframe -->
+    <iframe 
+        class="chat-iframe" 
+        src="https://embed.tawk.to/6906d224eb37e219510e42ad/1j91a9ojq"
+        allow="microphone; camera">
+    </iframe>
+</div>
+
+<script>
+    const openChat = document.getElementById('openChat');
+    const chatBox = document.getElementById('chatBox');
+    const closeChat = document.getElementById('closeChat');
+
+    openChat.addEventListener('click', () => {
+        chatBox.style.display = 'flex';
+        openChat.style.display = 'none';
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatBox.style.display = 'none';
+        openChat.style.display = 'block';
+    });
+</script>
+
+<!-- Load Tawk.to Scripts (Your Version) -->
+<script type="text/javascript">
+(function(global){
+    global.$_Tawk_AccountKey='6906d224eb37e219510e42ad';
+    global.$_Tawk_WidgetId='1j91a9ojq';
+    global.$_Tawk_Unstable=false;
+    global.$_Tawk = global.$_Tawk || {};
+    (function (w){
+        function l() {
+            if (window.$_Tawk.init !== undefined) return;
+            window.$_Tawk.init = true;
+
+            var files = [
+                'https://embed.tawk.to/_s/v4/app/68ff330ff6a/js/twk-main.js',
+                'https://embed.tawk.to/_s/v4/app/68ff330ff6a/js/twk-vendor.js',
+                'https://embed.tawk.to/_s/v4/app/68ff330ff6a/js/twk-chunk-vendors.js',
+                'https://embed.tawk.to/_s/v4/app/68ff330ff6a/js/twk-chunk-common.js',
+                'https://embed.tawk.to/_s/v4/app/68ff330ff6a/js/twk-runtime.js',
+                'https://embed.tawk.to/_s/v4/app/68ff330ff6a/js/twk-app.js'
+            ];
+
+            var s0=document.getElementsByTagName('script')[0];
+            for (var i = 0; i < files.length; i++) {
+                var s1 = document.createElement('script');
+                s1.src= files[i];
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+            }
+        }
+        if (document.readyState === 'complete') l();
+        else if (w.attachEvent) w.attachEvent('onload', l);
+        else w.addEventListener('load', l, false);
+    })(window);
+})(window);
+</script>
+
+</body>
+</html>
