@@ -38,57 +38,52 @@ class Dealer(models.Model):
 # Hotel & HotelRoom Models
 # -------------------------
 
+from django.db import models
+
 class Hotel(models.Model):
-    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE, related_name='hotels')
+    
+    dealer = models.ForeignKey('Dealer', on_delete=models.CASCADE, related_name='hotels')
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
-    amenities = models.JSONField(default=list)
-    description = models.TextField(null=True, blank=True)
-    floor_count = models.PositiveIntegerField(default=1, help_text="Total number of floors in the hotel")
-    Hotel_image=models.ImageField(upload_to='hotel_images/',null=True,blank=True)
+    description = models.TextField(null=True, blank=True, help_text="Brief description about the hotel, nearby attractions, etc.")
+    number_of_rooms=models.IntegerField(null=True,blank=True,unique=True)
+    ac_room_count = models.PositiveIntegerField(default=0,help_text="Number of air-conditioned rooms.")
+    non_ac_room_count = models.PositiveIntegerField(default=0,help_text="Number of non air-conditioned rooms.")
+
+    # Common facilities (boolean fields for clarity and filtering)
+    has_wifi = models.BooleanField(default=False)
+    has_parking = models.BooleanField(default=False)
+    has_tv = models.BooleanField(default=False)
+    has_restaurant = models.BooleanField(default=False)
+    has_dining = models.BooleanField(default=False)
+    has_elevator = models.BooleanField(default=False)
+    has_cctv = models.BooleanField(default=False)
+    has_room_service = models.BooleanField(default=False)
+    has_swimming_pool = models.BooleanField(default=False)
+    has_gym = models.BooleanField(default=False)
+
+    # Optional: JSON field for any extra amenities not covered above
+    extra_amenities = models.JSONField(default=list, blank=True)
+
+    floor_count = models.PositiveIntegerField(
+        default=1, 
+        help_text="Total number of floors in the hotel"
+    )
+    hotel_image = models.ImageField(
+        upload_to='hotel_images/', 
+        null=True, 
+        blank=True
+    )
+
     def __str__(self):
         return f"{self.name} - {self.location}"
 
 
-# class HotelRoom(models.Model):
-#     ROOM_TYPE_CHOICES = (
-#         ('single', 'Single'),
-#         ('double', 'Double'),
-#         ('suite', 'Suite'),
-#     )
-
-#     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='rooms')
-#     room_type = models.CharField(max_length=20, choices=ROOM_TYPE_CHOICES)
-#     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
-#     capacity = models.IntegerField()
-#     available = models.BooleanField(default=True)
-
-#     def __str__(self):
-#         return f"{self.hotel.name} - {self.room_type}"
-    
-class HotelRoom(models.Model):
-    ROOM_TYPE_CHOICES = (
-        ('single', 'Single'),
-        ('double', 'Double'),
-        ('suite', 'Suite'),
-    )
-    #dealer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) 
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='rooms')
-    floor_number = models.PositiveIntegerField(default=1)
-    room_number = models.CharField(max_length=4)
-    room_type = models.CharField(max_length=20, choices=ROOM_TYPE_CHOICES, null=True, blank=True)
-    price_per_night = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    roomImg=models.ImageField(upload_to='room_images/',null=True,blank=True)
-    capacity = models.IntegerField(null=True, blank=True)
-    available = models.BooleanField(default=True)
-
-    def __str__(self):
-        return f"{self.hotel.name} - Floor {self.floor_number} - Room {self.room_number}"
 
 
 class Booking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    hotel_room = models.ForeignKey(HotelRoom, on_delete=models.CASCADE)
+    hotel_room = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     check_in = models.DateField()
     check_out = models.DateField()
     name=models.CharField(max_length=50)
@@ -111,23 +106,23 @@ class Booking(models.Model):
 # Flight Model
 # -------------------------
 
-class Airline(models.Model):
-    name = models.CharField(max_length=100)
-    code = models.CharField(max_length=10, unique=True)
-    def __str__(self):
-        return self.name
+# class Airline(models.Model):
+#     name = models.CharField(max_length=100)
+#     code = models.CharField(max_length=10, unique=True)
+#     def __str__(self):
+#         return self.name
 
-class Flight(models.Model):
-    airline = models.ForeignKey(Airline, on_delete=models.CASCADE)
-    flight_number = models.CharField(max_length=10)
-    source = models.CharField(max_length=50)
-    destination = models.CharField(max_length=50)
-    departure_time = models.DateTimeField()
-    arrival_time = models.DateTimeField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    seats_available = models.IntegerField(default=100)
-    def __str__(self):
-        return f"{self.flight_number} ({self.source} → {self.destination})"
+# class Flight(models.Model):
+#     airline = models.ForeignKey(Airline, on_delete=models.CASCADE)
+#     flight_number = models.CharField(max_length=10)
+#     source = models.CharField(max_length=50)
+#     destination = models.CharField(max_length=50)
+#     departure_time = models.DateTimeField()
+#     arrival_time = models.DateTimeField()
+#     price = models.DecimalField(max_digits=10, decimal_places=2)
+#     seats_available = models.IntegerField(default=100)
+#     def __str__(self):
+#         return f"{self.flight_number} ({self.source} → {self.destination})"
     
 
 

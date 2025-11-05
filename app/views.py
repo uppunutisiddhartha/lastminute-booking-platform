@@ -17,7 +17,34 @@ from reportlab.lib.pagesizes import A4  #for the pdf pip install reportlab
 
 # Create your views here.
 def index(request):
-    return render(request,"index.html")
+    user = request.user
+    hotels = Hotel.objects.all()
+    # recommended = []
+
+    # if user.is_authenticated:
+    #     # Get hotels user viewed or wishlisted
+    #     viewed_ids = HotelView.objects.filter(user=user).order_by('-view_count').values_list('hotel_id', flat=True)
+    #     wishlisted_ids = Wishlist.objects.filter(user=user).values_list('hotel_id', flat=True)
+    #     combined_ids = list(dict.fromkeys(list(wishlisted_ids) + list(viewed_ids)))
+
+    #     # Personalized recommendations
+    #     recommended = Hotel.objects.filter(id__in=combined_ids)
+
+    #     # Optional: Nearby hotels by city
+    #     user_city = request.session.get('user_city')
+    #     if user_city:
+    #         nearby = Hotel.objects.filter(location__icontains=user_city).exclude(id__in=combined_ids)
+    #         recommended = list(recommended) + list(nearby)
+
+    context = {
+        'hotels': hotels,
+        # 'recommended_hotels': recommended,
+    }
+    return render(request, "index.html", context)
+
+
+
+
 
 # Customer Registration
 def customer_register(request):
@@ -90,154 +117,114 @@ def logout_view(request):
 
 # Hotel Booking Views
 @login_required(login_url='rolelogin')
-def hotel_booking(request):
-    hotels=Hotel.objects.all()
-    return render(request,'hotel_booking.html',{'hotels':hotels}) 
+def hotel_booking(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+    # hotel.views += 1
+    # hotel.save()
+    return render(request, 'hotel_booking.html', {'hotel': hotel})
 
 
 
 
 def hotel_detail(request, hotel_id):
     hotel = get_object_or_404(Hotel, id=hotel_id)
-    rooms = hotel.rooms.all()
-
-    # Optional: get check-in and check-out from query params
-    check_in_str = request.GET.get('check_in')
-    check_out_str = request.GET.get('check_out')
-
-    today = timezone.now().date()
-
-    check_in = timezone.datetime.strptime(check_in_str, '%Y-%m-%d').date() if check_in_str else today
-    check_out = timezone.datetime.strptime(check_out_str, '%Y-%m-%d').date() if check_out_str else today
-
-    bookings = Booking.objects.filter(hotel_room__hotel=hotel)
-
-    for room in rooms:
-        room.bookings = []
-        for booking in bookings:
-            if booking.hotel_room.id == room.id:
-                # Only consider booking if it overlaps with selected dates
-                if booking.check_out >= check_in and booking.check_in <= check_out:
-                    room.bookings.append({
-                        'user': booking.user,
-                        'check_in': booking.check_in,
-                        'check_out': booking.check_out,
-                        'num_persons': getattr(booking, 'num_persons', None),
-                    })
-
-    context = {
-        'hotel': hotel,
-        'rooms': rooms,
-        'check_in': check_in,
-        'check_out': check_out,
-    }
-    return render(request, 'hotel_detail.html', context)
+    #rooms = Hotel.objects.filter(hotel=hotel)
+    return render(request, "hotel_detail.html", {"hotel": hotel})
 
 
 
+# @login_required
+# def book_room(request, room_id):
+#     # ✅ Restrict access to customers only
+#     if request.user.role != 'customer':
+#         messages.error(request, "You are not allowed to book rooms.")
+#         return redirect("rolelogin")
 
+#     room = get_object_or_404(HotelRoom, id=room_id)
 
+#     if request.method == "POST":
+#         name = request.POST.get('name')
+#         check_in = request.POST.get("check_in")
+#         check_out = request.POST.get("check_out")
+#         num_persons = request.POST.get("num_persons")
+#         address_proof = request.FILES.get("address_proof")
 
+#         # ✅ Validate basic input
+#         if not (check_in and check_out and num_persons):
+#             messages.error(request, "All fields are required.")
+#             return redirect("book_room", room_id=room.id)
 
-from datetime import datetime
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.core.mail import send_mail
-from django.contrib.auth.decorators import login_required
-from .models import Booking, HotelRoom
+#         try:
+#             num_persons = int(num_persons)
+#         except ValueError:
+#             messages.error(request, "Invalid number of persons.")
+#             return redirect("book_room", room_id=room.id)
 
-@login_required
-def book_room(request, room_id):
-    # ✅ Restrict access to customers only
-    if request.user.role != 'customer':
-        messages.error(request, "You are not allowed to book rooms.")
-        return redirect("rolelogin")
+#         # ✅ Convert string to date
+#         try:
+#             check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
+#             check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
+#         except ValueError:
+#             messages.error(request, "Invalid date format.")
+#             return redirect("book_room", room_id=room.id)
 
-    room = get_object_or_404(HotelRoom, id=room_id)
+#         # ✅ Swap if reversed
+#         if check_in_date >= check_out_date:
+#             messages.warning(request, "Check-in date cannot be after or same as check-out date.")
+#             return redirect("book_room", room_id=room.id)
 
-    if request.method == "POST":
-        name = request.POST.get('name')
-        check_in = request.POST.get("check_in")
-        check_out = request.POST.get("check_out")
-        num_persons = request.POST.get("num_persons")
-        address_proof = request.FILES.get("address_proof")
+#         # ✅ Validate room capacity
+#         if num_persons > room.capacity:
+#             messages.error(request, f"Number of persons exceeds room capacity ({room.capacity}).")
+#             return redirect("book_room", room_id=room.id)
 
-        # ✅ Validate basic input
-        if not (check_in and check_out and num_persons):
-            messages.error(request, "All fields are required.")
-            return redirect("book_room", room_id=room.id)
+#         # ✅ Prevent overlapping bookings
+#         overlapping = Booking.objects.filter(
+#             hotel_room=room,
+#             check_in__lt=check_out_date,  # Existing booking starts before new checkout
+#             check_out__gt=check_in_date   # Existing booking ends after new checkin
+#         )
 
-        try:
-            num_persons = int(num_persons)
-        except ValueError:
-            messages.error(request, "Invalid number of persons.")
-            return redirect("book_room", room_id=room.id)
+#         if overlapping.exists():
+#             messages.error(request, "Room is already booked for the selected dates.")
+#             print("⚠️ Overlapping booking found:", overlapping)
+#             return redirect("book_room", room_id=room.id)
 
-        # ✅ Convert string to date
-        try:
-            check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
-            check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
-        except ValueError:
-            messages.error(request, "Invalid date format.")
-            return redirect("book_room", room_id=room.id)
+#         # ✅ Create and save booking
+#         booking = Booking.objects.create(
+#             user=request.user,
+#             name=name,
+#             hotel_room=room,
+#             check_in=check_in_date,
+#             check_out=check_out_date,
+#             num_persons=num_persons,
+#             address_proof=address_proof
+#         )
+#         print("✅ Booking saved successfully:", booking)
 
-        # ✅ Swap if reversed
-        if check_in_date >= check_out_date:
-            messages.warning(request, "Check-in date cannot be after or same as check-out date.")
-            return redirect("book_room", room_id=room.id)
+#         # ✅ Send confirmation email
+#         subject = f"Booking Confirmation for {room.hotel.name} - Room {room.room_number}"
+#         message = (
+#             f"Dear {getattr(request.user, 'name', request.user.username)},\n\n"
+#             f"Your booking for Room {room.room_number} at {room.hotel.name} has been confirmed.\n"
+#             f"Check-in: {check_in_date}\n"
+#             f"Check-out: {check_out_date}\n"
+#             f"Number of Guests: {num_persons}\n\n"
+#             f"Thank you for booking with us!"
+#         )
 
-        # ✅ Validate room capacity
-        if num_persons > room.capacity:
-            messages.error(request, f"Number of persons exceeds room capacity ({room.capacity}).")
-            return redirect("book_room", room_id=room.id)
+#         try:
+#             send_mail(subject, message, None, [request.user.email], fail_silently=False)
+#             print("✅ Confirmation email sent successfully.")
+#         except Exception as e:
+#             print("⚠️ Email sending failed:", e)
+#             messages.warning(request, f"Booking confirmed, but email could not be sent: {e}")
 
-        # ✅ Prevent overlapping bookings
-        overlapping = Booking.objects.filter(
-            hotel_room=room,
-            check_in__lt=check_out_date,  # Existing booking starts before new checkout
-            check_out__gt=check_in_date   # Existing booking ends after new checkin
-        )
+#         messages.success(request, f"Room {room.room_number} booked successfully!")
+#         return redirect("my_bookings")
 
-        if overlapping.exists():
-            messages.error(request, "Room is already booked for the selected dates.")
-            print("⚠️ Overlapping booking found:", overlapping)
-            return redirect("book_room", room_id=room.id)
-
-        # ✅ Create and save booking
-        booking = Booking.objects.create(
-            user=request.user,
-            name=name,
-            hotel_room=room,
-            check_in=check_in_date,
-            check_out=check_out_date,
-            num_persons=num_persons,
-            address_proof=address_proof
-        )
-        print("✅ Booking saved successfully:", booking)
-
-        # ✅ Send confirmation email
-        subject = f"Booking Confirmation for {room.hotel.name} - Room {room.room_number}"
-        message = (
-            f"Dear {getattr(request.user, 'name', request.user.username)},\n\n"
-            f"Your booking for Room {room.room_number} at {room.hotel.name} has been confirmed.\n"
-            f"Check-in: {check_in_date}\n"
-            f"Check-out: {check_out_date}\n"
-            f"Number of Guests: {num_persons}\n\n"
-            f"Thank you for booking with us!"
-        )
-
-        try:
-            send_mail(subject, message, None, [request.user.email], fail_silently=False)
-            print("✅ Confirmation email sent successfully.")
-        except Exception as e:
-            print("⚠️ Email sending failed:", e)
-            messages.warning(request, f"Booking confirmed, but email could not be sent: {e}")
-
-        messages.success(request, f"Room {room.room_number} booked successfully!")
-        return redirect("my_bookings")
-
-    # ✅ Render booking form
-    return render(request, "book_room.html", {"room": room})
+#     # ✅ Render booking form
+#     return render(request, "book_room.html", {"room": room})
 
 
 

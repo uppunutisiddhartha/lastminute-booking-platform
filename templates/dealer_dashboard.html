@@ -323,6 +323,13 @@
                 <p style="color: var(--text-medium);">From 120 reviews</p>
             </div>
         </div>
+         <div class="empty-state">
+                        <i class="fas fa-hotel"></i>
+                        <p>You haven’t added any properties yet. Get started now!</p>
+                        <a href="{% url 'add_hotel' %}" class="button secondary" style="margin-top: 15px;">
+                            <i class="fas fa-plus-circle"></i> Add Your First Hotel
+                        </a>
+                    </div>
 
         <div class="dashboard-grid">
             
@@ -338,7 +345,7 @@
                             <p><strong>Floors:</strong> {{ hotel.floor_count }} | Rooms: <span>{{ hotel.room_count_placeholder|default:"N/A" }}</span></p>
                         </div>
                         <div class="hotel-actions">
-                            <a href="{% url 'manage_rooms' hotel.id %}" class="button secondary">
+                            <a href="" class="button secondary">
                                 <i class="fas fa-door-open"></i> Manage Rooms
                             </a>
                             <a href="" class="button" style="background-color: #FFB200;">

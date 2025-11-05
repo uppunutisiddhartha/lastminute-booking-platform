@@ -1,708 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LastMinute.ai – Book Last Minute Flights & Hotels</title>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <meta charset="UTF-8">
+  <title>Hotels</title>
   <style>
-    :root {
-      --primary-blue: #2563eb;
-      --primary-blue-light: #3b82f6;
-      --dark-navy: #1e293b;
-      --accent-green: #10b981;
-      --accent-orange: #f59e0b;
-      --light-bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-dark: #334155;
-      --text-light: #64748b;
-      --border-radius: 8px;
-      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      --transition: all 0.2s ease;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--light-bg);
-      color: var(--text-dark);
-      line-height: 1.6;
-    }
-
-    header {
-      background-color: var(--dark-navy);
-      color: white;
-      padding: 16px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-icon {
-      font-size: 1.5rem;
-      color: var(--accent-orange);
-    }
-
-    header h1 {
+      font-family: "Poppins", sans-serif;
+      background: #f9fafc;
       margin: 0;
-      font-size: 1.5rem;
-      font-weight: 700;
+      padding: 20px;
     }
 
-    nav {
+    .hotel-card {
       display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.9rem;
-      padding: 8px 12px;
-      border-radius: 4px;
-      transition: var(--transition);
-    }
-
-    nav a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .nav-btn {
-      background-color: var(--primary-blue);
-      padding: 8px 16px;
-      border-radius: 4px;
-    }
-
-    .nav-btn:hover {
-      background-color: var(--primary-blue-light);
-    }
-
-    .hero {
-      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-navy) 100%);
-      color: white;
-      padding: 80px 40px;
-      text-align: center;
-    }
-
-    .hero-content {
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    .hero h2 {
-      font-size: 2.2rem;
-      margin-bottom: 16px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .hero p {
-      font-size: 1.1rem;
-      margin-bottom: 30px;
-      opacity: 0.9;
-    }
-
-    .search-container {
-      max-width: 900px;
-      margin: -40px auto 40px;
-      padding: 0 20px;
-    }
-
-    .search-box {
-      background: var(--card-bg);
-      padding: 24px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      align-items: flex-end;
-    }
-
-    .search-tabs {
-      display: flex;
-      width: 100%;
-      border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 16px;
-    }
-
-    .search-tab {
-      padding: 10px 20px;
-      font-weight: 600;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: var(--transition);
-    }
-
-    .search-tab.active {
-      color: var(--primary-blue);
-      border-bottom: 2px solid var(--primary-blue);
-    }
-
-    .search-field {
-      flex: 1;
-      min-width: 180px;
-    }
-
-    .search-field label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-      color: var(--text-light);
-      font-size: 0.85rem;
-    }
-
-    .search-field input,
-    .search-field select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 4px;
-      border: 1px solid #cbd5e1;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      transition: var(--transition);
-    }
-
-    .search-field input:focus,
-    .search-field select:focus {
-      outline: none;
-      border-color: var(--primary-blue);
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-    }
-
-    .search-btn {
-      background-color: var(--primary-blue);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 12px 24px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .search-btn:hover {
-      background-color: var(--primary-blue-light);
-    }
-
-    .quick-links {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin: 30px 0;
-      flex-wrap: wrap;
-    }
-
-    .quick-link {
-      background: var(--card-bg);
-      padding: 14px 20px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      text-decoration: none;
-      color: var(--text-dark);
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: var(--transition);
-    }
-
-    .quick-link:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .quick-link.flight {
-      border-left: 3px solid var(--primary-blue);
-    }
-
-    .quick-link.hotel {
-      border-left: 3px solid var(--accent-green);
-    }
-
-    .section-title {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .section-title h2 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      color: var(--dark-navy);
-    }
-
-    .section-title p {
-      color: var(--text-light);
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .recommendations {
-      padding: 50px 40px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .cards {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      width: 280px;
-      padding: 0;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      text-align: left;
-      position: relative;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       overflow: hidden;
-      transition: var(--transition);
+      margin-bottom: 25px;
+      transition: transform 0.2s ease-in-out;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    .hotel-card:hover {
+      transform: scale(1.01);
     }
 
-    .card-image {
-      height: 140px;
-      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+    .hotel-image {
+      flex: 1.2;
       position: relative;
     }
 
-    .card.flight .card-image {
-      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+    .hotel-image img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
     }
 
-    .card.hotel .card-image {
-      background: linear-gradient(135deg, var(--accent-green), #34d399);
+    .hotel-content {
+      flex: 2;
+      padding: 15px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .card-image i {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      font-size: 2.2rem;
-      opacity: 0.2;
+    .hotel-header h2 {
+      font-size: 20px;
+      margin: 0;
+      color: #222;
     }
 
-    .card-content {
-      padding: 18px;
-    }
-
-    .card h3 {
-      margin: 0 0 8px 0;
-      font-size: 1.2rem;
-    }
-
-    .card p {
-      margin-bottom: 12px;
-      color: var(--text-light);
-      font-size: 0.9rem;
-    }
-
-    .price {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--dark-navy);
-      margin-bottom: 5px;
-    }
-
-    .badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: var(--accent-orange);
-      color: black;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.7rem;
-      font-weight: 600;
-    }
-
-    .ai-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--accent-green);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-
-    .features {
-      background: var(--dark-navy);
-      color: white;
-      padding: 60px 40px;
-      text-align: center;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .feature {
-      padding: 24px 16px;
-    }
-
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 16px;
-      color: var(--accent-orange);
-    }
-
-    .feature h3 {
-      margin-bottom: 12px;
-      font-size: 1.2rem;
-    }
-
-    .feature p {
-      opacity: 0.8;
-      font-size: 0.9rem;
-    }
-
-    footer {
-      background: var(--dark-navy);
-      color: #cbd5e1;
-      padding: 50px 40px 20px;
-    }
-
-    .footer-content {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 30px;
-    }
-
-    .footer-column h3 {
-      color: white;
-      margin-bottom: 16px;
-      font-size: 1.1rem;
-    }
-
-    .footer-column ul {
-      list-style: none;
-    }
-
-    .footer-column ul li {
+    .hotel-location {
+      font-size: 14px;
+      color: #666;
       margin-bottom: 10px;
     }
 
-    .footer-column a {
-      color: #94a3b8;
-      text-decoration: none;
-      transition: var(--transition);
-      font-size: 0.9rem;
+    .hotel-rating {
+      display: inline-block;
+      background: #28a745;
+      color: #fff;
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 13px;
+      margin-right: 8px;
     }
 
-    .footer-column a:hover {
+    .hotel-amenities {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .hotel-price {
+      flex: 0.8;
+      padding: 20px;
+      text-align: right;
+      border-left: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hotel-price .discounted {
+      color: #28a745;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .hotel-price .old {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .hotel-price .offer {
+      color: #ff6600;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .btns {
+      margin-top: 10px;
+    }
+
+    .btns a {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-left: 5px;
+      font-size: 14px;
+    }
+
+    .btn-view {
+      border: 1px solid #333;
+      color: #333;
+    }
+
+    .btn-book {
+      background: #28a745;
       color: white;
     }
 
-    .footer-bottom {
-      text-align: center;
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 0.85rem;
-    }
-
-    .user-welcome {
-      color: var(--accent-orange);
-      font-weight: 600;
-      margin-right: 10px;
-    }
-
-    @media (max-width: 768px) {
-      header {
-        padding: 12px 20px;
-        flex-direction: column;
-        gap: 12px;
-      }
-      
-      nav {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      
-      .hero {
-        padding: 60px 20px;
-      }
-      
-      .hero h2 {
-        font-size: 1.8rem;
-      }
-      
-      .search-box {
-        padding: 18px;
-      }
-      
-      .search-field {
-        min-width: 100%;
-      }
-      
-      .recommendations {
-        padding: 30px 20px;
-      }
-      
-      .features {
-        padding: 40px 20px;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">
-      <div class="logo-icon">
-        <i class="fas fa-bolt"></i>
-      </div>
-      <h1>LastMinute.ai</h1>
-      {% if user.is_authenticated %}
-        <span class="user-welcome">Welcome, {{ user.username }}</span>
-      {% endif %}
-    </div>
-    <nav>
-      {% if not user.is_authenticated %}
-        <a href="{% url 'customer_register' %}"><i class="fas fa-user-plus"></i> Sign Up</a>
-        <a href="{% url 'dealer_register' %}"><i class="fas fa-building"></i> Partner</a>
-        <a href="{% url 'rolelogin' %}" class="nav-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+  <h1 style="text-align:center;">🏨 Available Hotels</h1>
+
+  {% for hotel in hotels %}
+  <div class="hotel-card">
+
+    <div class="hotel-image">
+      {% if hotel.hotel_image %}
+        <img src="{{ hotel.hotel_image.url }}" alt="{{ hotel.name }}">
       {% else %}
-        <a href="{% url 'my_bookings' %}"><i class="fas fa-suitcase"></i> My Bookings</a>
-        <a href="{% url 'logout' %}" class="nav-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <img src="https://via.placeholder.com/300x200?text=Hotel+Image" alt="No Image">
       {% endif %}
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div class="hero-content">
-      <h2>Smart Last-Minute Travel Deals</h2>
-      <p>Find the best prices on flights and hotels with AI-powered recommendations.</p>
     </div>
-  </section>
 
-  <div class="search-container">
-    <div class="search-box">
-      <div class="search-tabs">
-        <div class="search-tab active">Flights</div>
-        <div class="search-tab">Hotels</div>
-        <div class="search-tab">Packages</div>
+    <div class="hotel-content">
+      <div class="hotel-header">
+        <h2>{{ hotel.name }}</h2>
+        <div class="hotel-location">{{ hotel.location }}</div>
+        <div>
+          <span class="hotel-rating">4.7 ★</span> <small>Excellent</small>
+        </div>
       </div>
-      
-      <div class="search-field">
-        <label for="from">From</label>
-        <input type="text" id="from" placeholder="City or Airport" />
+
+      <div class="hotel-amenities">
+        {% if hotel.has_wifi %} 🛜 Free WiFi {% endif %}
+        {% if hotel.has_parking %} · 🚗 Parking {% endif %}
+        {% if hotel.has_dining %} · 🍽 Dining Area {% endif %}
+        {% if hotel.has_tv %} · 📺 TV {% endif %}
+        {% if hotel.has_elevator %} · 🛗 Elevator {% endif %}
+        {% if hotel.has_cctv %} · 📹 CCTV {% endif %}
       </div>
-      
-      <div class="search-field">
-        <label for="to">To</label>
-        <input type="text" id="to" placeholder="City or Airport" />
-      </div>
-      
-      <div class="search-field">
-        <label for="departure">Departure</label>
-        <input type="date" id="departure" />
-      </div>
-      
-      <div class="search-field">
-        <label for="travelers">Travelers</label>
-        <select id="travelers">
-          <option>1 Traveler</option>
-          <option>2 Travelers</option>
-          <option>3 Travelers</option>
-          <option>4+ Travelers</option>
-        </select>
-      </div>
-      
-      <button class="search-btn">
-        <i class="fas fa-search"></i> Find Deals
-      </button>
     </div>
+
+    <div class="hotel-price">
+      <div class="discounted">₹{{ hotel.price|default:1092 }}</div>
+      <div class="old">₹{{ hotel.old_price|default:4765 }}</div>
+      <div class="offer">73% off</div>
+      <div class="btns">
+        <a href="{% url 'hotel_detail' hotel.id %}" class="btn-view">View Details</a>
+        <a href="{% url 'hotel_booking' hotel.id %}" class="btn-book">Book Now</a>
+      </div>
+    </div>
+
   </div>
-
-  <div class="quick-links">
-    <a href="{% url 'search_flights' %}" class="quick-link flight">
-      <i class="fas fa-plane"></i> Book Flights
-    </a>
-
-    <a href="{% url 'hotel_booking' %}" class="quick-link hotel">
-      <i class="fas fa-hotel"></i> Book Hotels
-    </a>
-    
-    {% if user.is_authenticated %}
-      <a href="{% url 'my_bookings' %}" class="quick-link hotel">
-        <i class="fas fa-suitcase"></i> My Bookings
-      </a>
-      <a href="{% url 'support' %}" class="quick-link hotel">
-        <i class="fas fa-suitcase"></i> Need Help
-      </a>
-    {% endif %}
-  </div>
-
-  <section class="recommendations">
-    <div class="section-title">
-      <h2>Today's Best Deals</h2>
-      <p>Curated by our AI based on real-time availability</p>
-    </div>
-    <div class="cards">
-      <div class="card flight">
-        <div class="card-image">
-          <i class="fas fa-plane"></i>
-        </div>
-        <div class="card-content">
-          <span class="badge">Limited Time</span>
-          <h3>New York to London</h3>
-          <p class="price">$350</p>
-          <p>Non-stop • 6h 45m • Today</p>
-          <div class="ai-badge">
-            <i class="fas fa-robot"></i> AI Recommended
-          </div>
-        </div>
-      </div>
-      
-      <div class="card hotel">
-        <div class="card-image">
-          <i class="fas fa-hotel"></i>
-        </div>
-        <div class="card-content">
-          <span class="badge" style="background: var(--accent-green);">Hot Deal</span>
-          <h3>Paris 4★ Hotel</h3>
-          <p class="price">$189</p>
-          <p>2 nights • City Center • Free WiFi</p>
-          <div class="ai-badge">
-            <i class="fas fa-robot"></i> AI Recommended
-          </div>
-        </div>
-      </div>
-      
-      <div class="card flight">
-        <div class="card-image">
-          <i class="fas fa-plane"></i>
-        </div>
-        <div class="card-content">
-          <span class="badge" style="background: var(--primary-blue);">Eco-Friendly</span>
-          <h3>LA to Tokyo</h3>
-          <p class="price">$620</p>
-          <p>1 stop • 13h 20m • Tomorrow</p>
-          <div class="ai-badge">
-            <i class="fas fa-robot"></i> AI Recommended
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="features">
-    <div class="section-title">
-      <h2>Why Choose LastMinute.ai</h2>
-      <p>Our technology makes last-minute travel simple and affordable</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature">
-        <div class="feature-icon">
-          <i class="fas fa-brain"></i>
-        </div>
-        <h3>Smart AI Matching</h3>
-        <p>Finds the best deals based on your preferences and availability.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">
-          <i class="fas fa-bolt"></i>
-        </div>
-        <h3>Instant Booking</h3>
-        <p>Book in seconds with our streamlined process.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">
-          <i class="fas fa-percentage"></i>
-        </div>
-        <h3>Best Price Guarantee</h3>
-        <p>We guarantee you'll get the best prices on last-minute travel.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">
-          <i class="fas fa-headset"></i>
-        </div>
-        <h3>24/7 Support</h3>
-        <p>Our travel experts are available around the clock.</p>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="footer-content">
-      <div class="footer-column">
-        <h3>LastMinute.ai</h3>
-        <p>AI-powered travel platform for last-minute flight and hotel bookings.</p>
-      </div>
-      <div class="footer-column">
-        <h3>Quick Links</h3>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="{% url 'search_flights' %}">Flights</a></li>
-          <li><a href="{% url 'hotel_booking' %}">Hotels</a></li>
-          <li><a href="#">Deals</a></li>
-        </ul>
-      </div>
-      <div class="footer-column">
-        <h3>Support</h3>
-        <ul>
-          <li><a href="#">Help Center</a></li>
-          <li><a href="#">Contact Us</a></li>
-          <li><a href="#">FAQs</a></li>
-        </ul>
-      </div>
-      <div class="footer-column">
-        <h3>Legal</h3>
-        <ul>
-          <li><a href="#">Terms of Service</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2025 LastMinute.ai. All rights reserved.</p>
-    </div>
-  </footer>
+  {% endfor %}
 
 </body>
 </html>

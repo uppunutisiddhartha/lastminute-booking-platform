@@ -1,132 +1,113 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Hotel and Rooms</title>
+    <title>Add Hotel</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f7f9fc;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
-            color: #0B1D3A;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        input[type="file"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        button {
-            background-color: #0077FF;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #005dcc;
-        }
-
-        .messages p {
-            margin: 0;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .messages .error {
-            background-color: #E74C3C;
-            color: white;
-        }
-
-        .messages .success {
-            background-color: #00C48C;
-            color: white;
-        }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 30px;
+      }
+      form {
+        background: white;
+        max-width: 700px;
+        margin: auto;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+      .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .submit-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .submit-btn:hover {
+        background: #0056b3;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Add Hotel and Rooms</h2>
+  </head>
+  <body>
+    <h2 style="text-align: center">Add Hotel</h2>
 
-        <div class="messages">
-            {% if error %}
-                <p class="error">{{ error }}</p>
-            {% endif %}
-            {% for message in messages %}
-                <p class="success">{{ message }}</p>
-            {% endfor %}
-        </div>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+      <label>Dealer:</label>
+      <select name="dealer_id" required>
+        <option value="">-- Select Dealer --</option>
+        {% for dealer in dealers %}
+        <option value="{{ dealer.id }}">{{ dealer.name }}</option>
+        {% endfor %}
+      </select>
 
-            <label>Hotel Name:</label>
-            <input type="text" name="name" placeholder="Enter hotel name" required>
+      <label>Hotel Name:</label>
+      <input type="text" name="name" required />
 
-            <label>Location:</label>
-            <input type="text" name="location" placeholder="Enter hotel location" required>
+      <label>Location:</label>
+      <input type="text" name="location" required />
 
-            <label>Description:</label>
-            <textarea name="description" placeholder="Enter description (optional)"></textarea>
+      <label>Description:</label>
+      <textarea name="description" rows="4"></textarea>
 
-            <label>Number of Floors:</label>
-            <input type="number" name="floor_count" min="1" value="1" required>
+      <label>Floor Count:</label>
+      <input type="number" name="floor_count" min="1" value="1" />
+      <label>AC Room Count:</label>
+      <input type="number" name="ac_room_count" min="1" value="1" />
+      <label>Non ac Room  Count:</label>
+      <input type="number" name="non_ac_room_count" min="1" value="1" />
+      <label>Upload Image:</label>
+      <input type="file" name="hotel_image" accept="image/*" />
 
-            <label>Rooms per Floor:</label>
-            <input type="number" name="rooms_per_floor" min="1" value="1" required>
+      <h3>Facilities:</h3>
+      <div class="checkbox-group">
+        <label><input type="checkbox" name="has_wifi" /> Wi-Fi</label>
+        <label><input type="checkbox" name="has_parking" /> Parking</label>
+        <label><input type="checkbox" name="has_tv" /> TV</label>
+        <label
+          ><input type="checkbox" name="has_restaurant" /> Restaurant</label
+        >
+        <label><input type="checkbox" name="has_dining" /> Dining</label>
+        <label><input type="checkbox" name="has_elevator" /> Elevator</label>
+        <label><input type="checkbox" name="has_cctv" /> CCTV</label>
+        <label
+          ><input type="checkbox" name="has_room_service" /> Room Service</label
+        >
+        <label
+          ><input type="checkbox" name="has_swimming_pool" /> Swimming
+          Pool</label
+        >
+        <label><input type="checkbox" name="has_gym" /> Gym</label>
+      </div>
 
-            <label>Starting Room Number:</label>
-            <input type="number" name="start_number" value="101" required>
+      <label>Extra Amenities (comma separated):</label>
+      <input
+        type="text"
+        name="extra_amenities"
+        placeholder="e.g. Bar, Spa, Airport Shuttle"
+      />
 
-            <label>Hotel Image:</label>
-            <input type="file" name="Hotel_image" accept="image/*">
-
-            <button type="submit">Add Hotel</button>
-        </form>
-    </div>
-</body>
+      <button type="submit" class="submit-btn">Add Hotel</button>
+    </form>
+  </body>
 </html>

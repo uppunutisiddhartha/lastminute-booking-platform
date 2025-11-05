@@ -52,76 +52,305 @@ def dealer_register(request):
 
 @login_required
 def add_hotel(request):
-    dealer = Dealer.objects.get(user=request.user)
-
+    dealer=request.user.dealer
+    exixting_hotels=Hotel.objects.filter(dealer=dealer)
+    
+    if exixting_hotels.count()>=5:
+        messages.error(request, "You have reached the maximum limit of hotels you can add.")
+        return redirect('dealer_dashboard')
+    
     if request.method == 'POST':
+        dealer_id = request.POST.get('dealer_id')
+        dealer = Dealer.objects.get(id=dealer_id)
+        
         name = request.POST.get('name')
         location = request.POST.get('location')
         description = request.POST.get('description')
-        Image = request.FILES.get('Hotel_image')  # Use FILES for image uploads!
+        floor_count = request.POST.get('floor_count') or 1
+        hotel_image = request.FILES.get('hotel_image')
+        ac_room_count = request.POST.get('ac_room_count') or 0
+        non_ac_room_count = request.POST.get('non_ac_room_count') or 0
 
-        try:
-            floor_count = int(request.POST.get('floor_count', 1))
-            rooms_per_floor = int(request.POST.get('rooms_per_floor', 1))
-            start_number = int(request.POST.get('start_number', 101))
-        except ValueError:
-            return render(request, 'add_hotel.html', {
-                'error': "Floors, rooms per floor, and start number must be integers."
-            })
+        # Boolean fields (checkboxes)
+        has_wifi = 'has_wifi' in request.POST
+        has_parking = 'has_parking' in request.POST
+        has_tv = 'has_tv' in request.POST
+        has_restaurant = 'has_restaurant' in request.POST
+        has_dining = 'has_dining' in request.POST
+        has_elevator = 'has_elevator' in request.POST
+        has_cctv = 'has_cctv' in request.POST
+        has_room_service = 'has_room_service' in request.POST
+        has_swimming_pool = 'has_swimming_pool' in request.POST
+        has_gym = 'has_gym' in request.POST
 
-        if not name or not location:
-            return render(request, 'add_hotel.html', {
-                'error': "Hotel name and location are required."
-            })
+        # Optional: extra amenities from text input (comma-separated)
+        extras = request.POST.get('extra_amenities')
+        extra_amenities = [item.strip() for item in extras.split(',')] if extras else []
 
-        # ✅ Create the hotel
-        hotel = Hotel.objects.create(
+        # Create Hotel object
+        Hotel.objects.create(
             dealer=dealer,
             name=name,
             location=location,
             description=description,
             floor_count=floor_count,
-            Hotel_image=Image
+            hotel_image=hotel_image,
+            has_wifi=has_wifi,
+            has_parking=has_parking,
+            has_tv=has_tv,
+            has_restaurant=has_restaurant,
+            has_dining=has_dining,
+            has_elevator=has_elevator,
+            has_cctv=has_cctv,
+            has_room_service=has_room_service,
+            has_swimming_pool=has_swimming_pool,
+            has_gym=has_gym,
+            extra_amenities=extra_amenities,
+            ac_room_count=ac_room_count,
+            non_ac_room_count=non_ac_room_count
         )
 
-        # ✅ Generate rooms automatically
-        for floor in range(1, floor_count + 1):
-            for i in range(rooms_per_floor):
-                room_no = start_number + (floor - 1) * 100 + i
-                HotelRoom.objects.create(
-                    #dealer=dealer,
-                    hotel=hotel,
-                    floor_number=floor,
-                    room_number=str(room_no),
-                    room_type='Standard',  # default room type if needed
-                    price_per_night=1000,  # default price if model requires
-                    capacity=2,            # default capacity
-                    available=True
-                )
+        messages.success(request, 'Hotel added successfully!')
+        return redirect('add_hotel')  # change this to your list page name
 
-        messages.success(request, f"Hotel '{hotel.name}' created with {floor_count} floors and {rooms_per_floor} rooms per floor.")
-        return redirect('manage_rooms', hotel_id=hotel.id)
+    dealers = Dealer.objects.all()
+    return render(request, 'add_hotel.html', {'dealers': dealers})
 
-    return render(request, 'add_hotel.html')
+
+
+
 
 
 @login_required
 def dealer_dashboard(request):
     dealer = Dealer.objects.get(user=request.user)
     hotels = dealer.hotels.all()
-    #flights = dealer.flights.all()
+    
+    #Booking.objects.filter(hotel=hotels)
 
-    # Fetch all bookings for rooms in dealer's hotels
-    bookings = Booking.objects.filter(hotel_room__hotel__in=hotels).order_by("-check_in")
 
     return render(request, 'dealer_dashboard.html', {
         'hotels': hotels,
-        #'flights': flights,
-        'bookings': bookings,  # pass bookings to template
+        
+        'bookings': bookings,  
     })
 
+def bookings(request):
+    if request.user.role != 'dealer':
+         messages.error(request, "Access denied. Only dealers can view bookings.")
+         return redirect('rolelogin')
+    # dealer_rooms = HotelRoom.objects.filter(hotel__dealer=request.user)
+    dealer = Dealer.objects.get(user=request.user)
+    # Get all bookings for those rooms
+    dealer_rooms = Hotel.objects.filter(hotel__dealer=dealer)
+    bookings = Booking.objects.filter(hotel_room__in=dealer_rooms).select_related('hotel_room', 'user')
+
+    context = {
+        'bookings': bookings
+    }
+    return render(request, "booking.html",context)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
 #add hotel Room@login_required
 @login_required
 def add_room(request, hotel_id, room_id=None):
@@ -174,7 +403,7 @@ def add_room(request, hotel_id, room_id=None):
 
     return render(request, 'add_room.html', {'hotel': hotel, 'room': room})
 
-"""
+
 @login_required
 def add_hotel(request):
     if request.method == 'POST':
@@ -195,7 +424,7 @@ def add_hotel(request):
             return render(request, 'dashboard/add_hotel.html', {'error': 'All fields are required.'})
 
     return render(request, 'add_hotel.html')
-"""
+
 
 @login_required
 def manage_rooms(request, hotel_id):
@@ -219,6 +448,7 @@ def manage_rooms(request, hotel_id):
 
 
 
+
 @login_required
 def edit_room(request, room_id):
     room = get_object_or_404(HotelRoom, id=room_id)
@@ -237,20 +467,5 @@ def edit_room(request, room_id):
     return render(request, 'edit_room.html', {'room': room})
 
 
-
-
-def bookings(request):
-    if request.user.role != 'dealer':
-         messages.error(request, "Access denied. Only dealers can view bookings.")
-         return redirect('rolelogin')
-    # dealer_rooms = HotelRoom.objects.filter(hotel__dealer=request.user)
-    dealer = Dealer.objects.get(user=request.user)
-    # Get all bookings for those rooms
-    dealer_rooms = HotelRoom.objects.filter(hotel__dealer=dealer)
-    bookings = Booking.objects.filter(hotel_room__in=dealer_rooms).select_related('hotel_room', 'user')
-
-    context = {
-        'bookings': bookings
-    }
-    return render(request, "booking.html",context)
+"""
 
