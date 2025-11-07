@@ -45,7 +45,7 @@ class Hotel(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     number_of_rooms = models.PositiveIntegerField(null=True, blank=True, help_text="Total number of rooms in the hotel")
     ac_room_count = models.PositiveIntegerField(default=0)
     non_ac_room_count = models.PositiveIntegerField(default=0)
@@ -80,7 +80,7 @@ class Room(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='rooms')
     room_number = models.CharField(max_length=20)
     room_type = models.CharField(max_length=10, choices=ROOM_TYPE_CHOICES)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    #price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_booked = models.BooleanField(default=False)
     booked_by = models.CharField(max_length=100, blank=True, null=True)
 

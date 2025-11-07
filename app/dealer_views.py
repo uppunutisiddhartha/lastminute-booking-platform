@@ -65,6 +65,7 @@ def add_hotel(request):
     if request.method == 'POST':
         dealer_id = request.POST.get('dealer_id')
         dealer = Dealer.objects.get(id=dealer_id)
+        price = request.POST.get('price')
         name = request.POST.get('name')
         location = request.POST.get('location')
         description = request.POST.get('description')
@@ -95,6 +96,7 @@ def add_hotel(request):
             location=location,
             description=description,
             floor_count=floor_count,
+            price=price,
             hotel_image=hotel_image,
             has_wifi=has_wifi,
             has_parking=has_parking,

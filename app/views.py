@@ -14,35 +14,9 @@ from reportlab.pdfgen import canvas
 from django.core.mail import EmailMessage
 from reportlab.lib.pagesizes import A4  #for the pdf pip install reportlab
 
-
-# Create your views here.
 def index(request):
-    user = request.user
-    hotels = Hotel.objects.all()
-    # recommended = []
-
-    # if user.is_authenticated:
-    #     # Get hotels user viewed or wishlisted
-    #     viewed_ids = HotelView.objects.filter(user=user).order_by('-view_count').values_list('hotel_id', flat=True)
-    #     wishlisted_ids = Wishlist.objects.filter(user=user).values_list('hotel_id', flat=True)
-    #     combined_ids = list(dict.fromkeys(list(wishlisted_ids) + list(viewed_ids)))
-
-    #     # Personalized recommendations
-    #     recommended = Hotel.objects.filter(id__in=combined_ids)
-
-    #     # Optional: Nearby hotels by city
-    #     user_city = request.session.get('user_city')
-    #     if user_city:
-    #         nearby = Hotel.objects.filter(location__icontains=user_city).exclude(id__in=combined_ids)
-    #         recommended = list(recommended) + list(nearby)
-
-    context = {
-        'hotels': hotels,
-        # 'recommended_hotels': recommended,
-    }
-    return render(request, "index.html", context)
-
-
+    hotels = Hotel.objects.all().prefetch_related('rooms')  # load all hotels with their rooms efficiently
+    return render(request, 'index.html', {'hotels': hotels})
 
 
 
@@ -382,7 +356,7 @@ def payment(request, hotel_id):
         messages.error(request, "Sorry — no available rooms in this hotel right now.")
         return redirect('hotel_detail', hotel_id=hotel.id)
 
-    amount = room.price  # take the price from the chosen room
+    amount = hotel.price  
 
     context = {
         'hotel': hotel,
