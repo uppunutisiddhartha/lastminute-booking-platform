@@ -133,98 +133,6 @@ def hotel_detail(request, hotel_id):
 
 
 
-# @login_required
-# def book_room(request, room_id):
-#     # ✅ Restrict access to customers only
-#     if request.user.role != 'customer':
-#         messages.error(request, "You are not allowed to book rooms.")
-#         return redirect("rolelogin")
-
-#     room = get_object_or_404(HotelRoom, id=room_id)
-
-#     if request.method == "POST":
-#         name = request.POST.get('name')
-#         check_in = request.POST.get("check_in")
-#         check_out = request.POST.get("check_out")
-#         num_persons = request.POST.get("num_persons")
-#         address_proof = request.FILES.get("address_proof")
-
-#         # ✅ Validate basic input
-#         if not (check_in and check_out and num_persons):
-#             messages.error(request, "All fields are required.")
-#             return redirect("book_room", room_id=room.id)
-
-#         try:
-#             num_persons = int(num_persons)
-#         except ValueError:
-#             messages.error(request, "Invalid number of persons.")
-#             return redirect("book_room", room_id=room.id)
-
-#         # ✅ Convert string to date
-#         try:
-#             check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
-#             check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
-#         except ValueError:
-#             messages.error(request, "Invalid date format.")
-#             return redirect("book_room", room_id=room.id)
-
-#         # ✅ Swap if reversed
-#         if check_in_date >= check_out_date:
-#             messages.warning(request, "Check-in date cannot be after or same as check-out date.")
-#             return redirect("book_room", room_id=room.id)
-
-#         # ✅ Validate room capacity
-#         if num_persons > room.capacity:
-#             messages.error(request, f"Number of persons exceeds room capacity ({room.capacity}).")
-#             return redirect("book_room", room_id=room.id)
-
-#         # ✅ Prevent overlapping bookings
-#         overlapping = Booking.objects.filter(
-#             hotel_room=room,
-#             check_in__lt=check_out_date,  # Existing booking starts before new checkout
-#             check_out__gt=check_in_date   # Existing booking ends after new checkin
-#         )
-
-#         if overlapping.exists():
-#             messages.error(request, "Room is already booked for the selected dates.")
-#             print("⚠️ Overlapping booking found:", overlapping)
-#             return redirect("book_room", room_id=room.id)
-
-#         # ✅ Create and save booking
-#         booking = Booking.objects.create(
-#             user=request.user,
-#             name=name,
-#             hotel_room=room,
-#             check_in=check_in_date,
-#             check_out=check_out_date,
-#             num_persons=num_persons,
-#             address_proof=address_proof
-#         )
-#         print("✅ Booking saved successfully:", booking)
-
-#         # ✅ Send confirmation email
-#         subject = f"Booking Confirmation for {room.hotel.name} - Room {room.room_number}"
-#         message = (
-#             f"Dear {getattr(request.user, 'name', request.user.username)},\n\n"
-#             f"Your booking for Room {room.room_number} at {room.hotel.name} has been confirmed.\n"
-#             f"Check-in: {check_in_date}\n"
-#             f"Check-out: {check_out_date}\n"
-#             f"Number of Guests: {num_persons}\n\n"
-#             f"Thank you for booking with us!"
-#         )
-
-#         try:
-#             send_mail(subject, message, None, [request.user.email], fail_silently=False)
-#             print("✅ Confirmation email sent successfully.")
-#         except Exception as e:
-#             print("⚠️ Email sending failed:", e)
-#             messages.warning(request, f"Booking confirmed, but email could not be sent: {e}")
-
-#         messages.success(request, f"Room {room.room_number} booked successfully!")
-#         return redirect("my_bookings")
-
-#     # ✅ Render booking form
-#     return render(request, "book_room.html", {"room": room})
 
 
 
@@ -457,3 +365,83 @@ def confirm_payment(request):
 
 def support(request):
     return render(request,"support/support.html")
+
+
+
+
+
+
+def payment(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+
+    # pick a room to show on the payment page (first available)
+    room = Room.objects.filter(hotel=hotel, is_booked=False).first()
+
+    if not room:
+        # No free rooms — redirect back or show an error
+        messages.error(request, "Sorry — no available rooms in this hotel right now.")
+        return redirect('hotel_detail', hotel_id=hotel.id)
+
+    amount = room.price  # take the price from the chosen room
+
+    context = {
+        'hotel': hotel,
+        'room': room,
+        'amount': amount,
+    }
+    return render(request, "payment.html", context)
+
+def confirm_checkin_hotel(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+
+    if request.method == 'POST':
+        guest_name = request.POST.get('guest_name')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+
+        room = Room.objects.filter(hotel=hotel, is_booked=False).first()
+        if not room:
+            messages.error(request, "No available rooms in this hotel.")
+            return redirect('payment', hotel_id=hotel.id)
+
+        booking = Booking.objects.create(
+            user=request.user,
+            hotel=hotel,
+            room=room,
+            name=guest_name,
+            phone=phone,
+            email=email,
+            check_in=timezone.now().date(),
+            check_out=timezone.now().date(),
+            num_persons=1,
+        )
+
+        room.is_booked = True
+        room.save()
+
+        # ✉️ Send confirmation email
+        subject = f"Booking Confirmation - {booking.booking_id}"
+        message = (
+            f"Dear {guest_name},\n\n"
+            f"Your booking at {hotel.name} is confirmed.\n"
+            f"Booking ID: {booking.booking_id}\n"
+            f"Hotel: {hotel.name}\n"
+            f"Check-in: {booking.check_in}\n"
+            f"Please show this Booking ID at the hotel reception.\n\n"
+            f"Thank you for choosing us!"
+        )
+
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+        except Exception:
+            messages.warning(request, "Booking created but email could not be sent (check mail settings).")
+
+        messages.success(request, f"✅ Booking confirmed! Your Booking ID is {booking.booking_id}")
+        return redirect('booking_conformed', hotel_id=hotel.id)
+
+    return redirect('payment', hotel_id=hotel.id)
+
+
+def booking_conformed(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+    return render(request, "booking_conformed.html", {"hotel": hotel})

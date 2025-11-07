@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check-In Payment - {{ hotel.name }} | Room {{ room.room_number }}</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --radius: 8px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .payment-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      max-width: 1000px;
+      margin: 30px auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    @media (min-width: 768px) {
+      .payment-card {
+        flex-direction: row;
+      }
+    }
+    
+    .payment-info {
+      flex: 1;
+      padding: 30px;
+      background: var(--light);
+      border-right: 1px solid var(--border);
+    }
+    
+    .payment-form {
+      flex: 1;
+      padding: 30px;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    
+    .hotel-logo {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      margin-right: 15px;
+    }
+    
+    .hotel-info h1 {
+      font-size: 1.5rem;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    
+    .hotel-info p {
+      color: var(--secondary);
+      font-size: 0.9rem;
+    }
+    
+    .room-details {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .room-details h2 {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+    }
+    
+    .room-details h2:before {
+      content: "🏨";
+      margin-right: 10px;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .detail-label {
+      color: var(--secondary);
+      font-weight: 500;
+    }
+    
+    .detail-value {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .price-highlight {
+      background: var(--primary);
+      color: white;
+      padding: 15px;
+      border-radius: var(--radius);
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .price-highlight .amount {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    
+    .price-highlight .label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    
+    .form-section {
+      margin-bottom: 25px;
+    }
+    
+    .form-section h3 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+    }
+    
+    .form-section h3:before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 20px;
+      background: var(--primary);
+      margin-right: 10px;
+      border-radius: 3px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 0.9rem;
+    }
+    
+    .required:after {
+      content: " *";
+      color: var(--danger);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .date-inputs {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .date-inputs .form-group {
+      flex: 1;
+    }
+    
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .file-input-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 15px;
+      background: var(--light);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .file-input-button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .file-input-button i {
+      margin-right: 8px;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 14px 25px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: var(--secondary);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--light);
+      border-color: var(--secondary);
+    }
+    
+    .security-notice {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-top: 25px;
+      font-size: 0.9rem;
+      color: #856404;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .security-notice:before {
+      content: "🔒";
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: var(--secondary);
+      font-size: 0.85rem;
+    }
+    
+    .footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="payment-card">
+      <div class="payment-info">
+        <div class="header">
+          <div class="hotel-logo">{{ hotel.name|slice:":1" }}</div>
+          <div class="hotel-info">
+            <h1>{{ hotel.name }}</h1>
+            <p>Complete your check-in payment</p>
+          </div>
+        </div>
+        
+        <div class="room-details">
+          <h2>Room Details</h2>
+          <div class="detail-row">
+            <span class="detail-label">Room Number</span>
+            <span class="detail-value">{{ room.room_number }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Room Type</span>
+            <span class="detail-value">{{ room.get_room_type_display }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Check-in Date</span>
+            <span class="detail-value" id="display-checkin">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Check-out Date</span>
+            <span class="detail-value" id="display-checkout">-</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Number of Guests</span>
+            <span class="detail-value" id="display-guests">1</span>
+          </div>
+        </div>
+        
+        <div class="price-highlight">
+          <div class="label">Total Amount</div>
+          <div class="amount">₹{{ room.price }}</div>
+          <div class="label">Inclusive of all taxes</div>
+        </div>
+        
+        <div class="security-notice">
+          Your payment information is secure and encrypted. We do not store your credit card details.
+        </div>
+      </div>
+      
+      <div class="payment-form">
+        <form method="post" action="{% url 'confirm_checkin' room.id %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <div class="form-section">
+            <h3>Guest Information</h3>
+            
+            <div class="form-group">
+              <label for="guest_name" class="required">Full Name</label>
+              <input type="text" id="guest_name" name="guest_name" placeholder="Enter your full name" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="phone" class="required">Mobile Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="Enter your mobile number" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="email" class="required">Email Address</label>
+              <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h3>Stay Details</h3>
+            
+            <div class="date-inputs">
+              <div class="form-group">
+                <label for="check_in" class="required">Check-in Date</label>
+                <input type="date" id="check_in" name="check_in" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="check_out" class="required">Check-out Date</label>
+                <input type="date" id="check_out" name="check_out" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="num_persons" class="required">Number of Persons</label>
+              <input type="number" id="num_persons" name="num_persons" min="1" value="1" required>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h3>Document Upload (Optional)</h3>
+            
+            <div class="form-group">
+              <label for="address_proof">Address Proof</label>
+              <div class="file-input-wrapper">
+                <div class="file-input-button">
+                  <i>📎</i> Choose File
+                </div>
+                <input type="file" id="address_proof" name="address_proof" accept=".pdf,.jpg,.jpeg,.png">
+              </div>
+              <div style="font-size: 0.8rem; color: var(--secondary); margin-top: 5px;">
+                Accepted formats: PDF, JPG, PNG (Max 5MB)
+              </div>
+            </div>
+          </div>
+          
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">
+              Confirm Payment & Check-In
+            </button>
+            <a href="{% url 'room_list' hotel.id %}" class="btn btn-secondary">
+              Cancel
+            </a>
+          </div>
+        </form>
+        
+        <div class="footer">
+          <p>Need help? Contact our support at <a href="mailto:support@hotel.com">support@hotel.com</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update display fields based on form inputs
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkInInput = document.getElementById('check_in');
+      const checkOutInput = document.getElementById('check_out');
+      const numPersonsInput = document.getElementById('num_persons');
+      
+      const displayCheckIn = document.getElementById('display-checkin');
+      const displayCheckOut = document.getElementById('display-checkout');
+      const displayGuests = document.getElementById('display-guests');
+      
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      checkInInput.min = today;
+      
+      // Update display when inputs change
+      checkInInput.addEventListener('change', updateDisplay);
+      checkOutInput.addEventListener('change', updateDisplay);
+      numPersonsInput.addEventListener('change', updateDisplay);
+      
+      function updateDisplay() {
+        if (checkInInput.value) {
+          displayCheckIn.textContent = formatDate(checkInInput.value);
+        }
+        
+        if (checkOutInput.value) {
+          displayCheckOut.textContent = formatDate(checkOutInput.value);
+        }
+        
+        if (numPersonsInput.value) {
+          displayGuests.textContent = numPersonsInput.value;
+        }
+      }
+      
+      function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+      }
+      
+      // Set check-out min date based on check-in date
+      checkInInput.addEventListener('change', function() {
+        if (this.value) {
+          checkOutInput.min = this.value;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

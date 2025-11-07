@@ -7,7 +7,8 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from datetime import datetime
 from django.shortcuts import get_object_or_404
-
+from django.utils import timezone
+from datetime import timedelta
 
 
 # Dealer Registration
@@ -50,28 +51,29 @@ def dealer_register(request):
 
     return render(request, 'auths/dealer_register.html')
 
+from .models import Hotel, Dealer, Room
+
 @login_required
 def add_hotel(request):
-    dealer=request.user.dealer
-    exixting_hotels=Hotel.objects.filter(dealer=dealer)
-    
-    if exixting_hotels.count()>=5:
+    dealer = request.user.dealer
+    existing_hotels = Hotel.objects.filter(dealer=dealer)
+
+    if existing_hotels.count() >= 1:
         messages.error(request, "You have reached the maximum limit of hotels you can add.")
         return redirect('dealer_dashboard')
-    
+
     if request.method == 'POST':
         dealer_id = request.POST.get('dealer_id')
         dealer = Dealer.objects.get(id=dealer_id)
-        
         name = request.POST.get('name')
         location = request.POST.get('location')
         description = request.POST.get('description')
-        floor_count = request.POST.get('floor_count') or 1
+        floor_count = int(request.POST.get('floor_count') or 1)
         hotel_image = request.FILES.get('hotel_image')
-        ac_room_count = request.POST.get('ac_room_count') or 0
-        non_ac_room_count = request.POST.get('non_ac_room_count') or 0
+        ac_room_count = int(request.POST.get('ac_room_count') or 0)
+        non_ac_room_count = int(request.POST.get('non_ac_room_count') or 0)
 
-        # Boolean fields (checkboxes)
+        # Boolean fields
         has_wifi = 'has_wifi' in request.POST
         has_parking = 'has_parking' in request.POST
         has_tv = 'has_tv' in request.POST
@@ -83,12 +85,11 @@ def add_hotel(request):
         has_swimming_pool = 'has_swimming_pool' in request.POST
         has_gym = 'has_gym' in request.POST
 
-        # Optional: extra amenities from text input (comma-separated)
         extras = request.POST.get('extra_amenities')
         extra_amenities = [item.strip() for item in extras.split(',')] if extras else []
 
-        # Create Hotel object
-        Hotel.objects.create(
+        # Create hotel
+        hotel = Hotel.objects.create(
             dealer=dealer,
             name=name,
             location=location,
@@ -110,12 +111,18 @@ def add_hotel(request):
             non_ac_room_count=non_ac_room_count
         )
 
-        messages.success(request, 'Hotel added successfully!')
-        return redirect('add_hotel')  # change this to your list page name
+        #Auto-generate rooms
+        for i in range(1, ac_room_count + 1):
+            Room.objects.create(hotel=hotel, room_number=f"AC-{i}", room_type='AC')
+
+        for i in range(1, non_ac_room_count + 1):
+            Room.objects.create(hotel=hotel, room_number=f"NAC-{i}", room_type='NON_AC')
+
+        messages.success(request, 'Hotel and rooms added successfully!')
+        return redirect('add_hotel')
 
     dealers = Dealer.objects.all()
     return render(request, 'add_hotel.html', {'dealers': dealers})
-
 
 
 
@@ -125,43 +132,86 @@ def add_hotel(request):
 def dealer_dashboard(request):
     dealer = Dealer.objects.get(user=request.user)
     hotels = dealer.hotels.all()
-    
-    #Booking.objects.filter(hotel=hotels)
-
+    bookings = Booking.objects.filter(hotel__in=hotels)
 
     return render(request, 'dealer_dashboard.html', {
         'hotels': hotels,
-        
-        'bookings': bookings,  
+        'bookings': bookings,
     })
 
 def bookings(request):
-    if request.user.role != 'dealer':
-         messages.error(request, "Access denied. Only dealers can view bookings.")
-         return redirect('rolelogin')
-    # dealer_rooms = HotelRoom.objects.filter(hotel__dealer=request.user)
-    dealer = Dealer.objects.get(user=request.user)
-    # Get all bookings for those rooms
-    dealer_rooms = Hotel.objects.filter(hotel__dealer=dealer)
-    bookings = Booking.objects.filter(hotel_room__in=dealer_rooms).select_related('hotel_room', 'user')
+    #morinig chestha   
+    return render(request, "booking.html")
 
+
+
+
+@login_required
+def room_list(request, hotel_id):
+
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+    #print("DEBUG → Hotel ID:", hotel.id, "Name:", hotel.name, "Room count:", hotel.rooms.count())
+    rooms = hotel.rooms.all()
+    return render(request, 'room_list.html', {'hotel': hotel, 'rooms': rooms})
+
+
+
+
+@login_required
+def room_checkin(request, room_id):
+
+    room = get_object_or_404(Room, id=room_id)
     context = {
-        'bookings': bookings
+        'room': room,
+        'hotel': room.hotel,
     }
-    return render(request, "booking.html",context)
+    return render(request, 'check_in.html', context)
 
 
+@login_required
+def confirm_checkin(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    hotel = room.hotel
+
+    if request.method == 'POST':
+        guest_name = request.POST.get('guest_name')
+
+        # ✅ Create booking record
+        Booking.objects.create(
+            user=request.user,
+            email=request.user.email,
+             number=request.user.phone,
+            hotel=hotel,
+            room=room,
+            name=guest_name,
+            check_in=timezone.now().date(),  # auto fill today's date
+            check_out=timezone.now().date(), # you can later extend this to user input
+            num_persons=1,
+        )
+
+        # ✅ Update room status
+        room.is_booked = True
+        room.save()
+
+        messages.success(request, f"✅ Room {room.room_number} checked in for {guest_name}.")
+        return redirect('room_list', hotel_id=hotel.id)
+
+    return redirect('room_list', hotel_id=hotel.id)
 
 
+@login_required
+def room_checkout(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    hotel = room.hotel
+    # Update room status
+    room.is_booked = False
+    room.save()
 
+ 
+    Booking.objects.filter(room=room, check_out=timezone.now().date()).update(check_out=timezone.now().date())
 
-
-
-
-
-
-
-
+    messages.success(request, f"✅ Room {room.room_number} has been checked out successfully.")
+    return redirect('room_list', hotel_id=hotel.id)
 
 
 

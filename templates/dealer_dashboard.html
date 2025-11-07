@@ -282,7 +282,18 @@
 <body>
     <div class="sidebar">
         <h2>LastMinute.ai</h2>
-        <a href="#overview" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+  
+{% if hotels %}
+    {% with hotel=hotels.first %}
+        <a href="{% url 'room_list' hotel.id %}" class="btn btn-primary">View Rooms</a>
+    {% endwith %}
+{% else %}
+    <a href="{% url 'add_hotel' %}" class="btn btn-success">Add Hotel</a>
+{% endif %}
+
+
+
         <a href="#hotels" class="nav-link"><i class="fas fa-hotel"></i> My Hotels</a>
         <a href="#rooms" class="nav-link"><i class="fas fa-door-open"></i> Manage Rooms</a>
         <a href="#bookings" class="nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>

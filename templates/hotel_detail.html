@@ -1,67 +1,1134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{{ hotel.name }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ hotel.name }} - LuxeStay Hotels</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial; background: #fafafa; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 10px; }
-        .images img {
-            width: 30%;
-            border-radius: 10px;
-            margin: 5px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
-        .price { color: #007b00; font-size: 24px; margin: 10px 0; }
-        .amenities span {
-            display: inline-block;
-            background: #eee;
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin: 4px;
+
+        :root {
+            --primary: #FF385C;
+            --primary-dark: #E31C5F;
+            --secondary: #222222;
+            --accent: #00A699;
+            --text-dark: #222222;
+            --text-light: #717171;
+            --text-lighter: #B0B0B0;
+            --background: #FFFFFF;
+            --surface: #F7F7F7;
+            --border: #DDDDDD;
+            --shadow: 0 8px 28px rgba(0,0,0,0.12);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
         }
-        .book-btn {
-            background: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             text-decoration: none;
         }
-        .book-btn:hover { background: #218838; }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-menu:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .menu-icon {
+            font-size: 16px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+        }
+
+        /* Hero Section */
+        .hotel-hero {
+            position: relative;
+            padding: 0 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hotel-gallery {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: 300px 300px;
+            gap: 8px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        .main-image {
+            grid-row: span 2;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .main-image:hover img {
+            transform: scale(1.03);
+        }
+
+        .side-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .side-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .side-image:hover img {
+            transform: scale(1.03);
+        }
+
+        .view-all-photos {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .view-all-photos:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Hotel Info Section */
+        .hotel-info-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 48px;
+            padding: 48px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hotel-details {
+            padding-right: 24px;
+        }
+
+        .hotel-header {
+            margin-bottom: 24px;
+        }
+
+        .hotel-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .hotel-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .hotel-highlights {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .highlight-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .highlight-icon {
+            color: var(--accent);
+        }
+
+        .host-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 24px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        .host-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .host-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .host-details h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .host-details p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .hotel-description {
+            color: var(--text-dark);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .amenities-section {
+            margin-bottom: 32px;
+        }
+
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .amenity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .amenity-item:hover {
+            background: var(--surface);
+        }
+
+        .amenity-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        /* Booking Widget */
+        .booking-widget {
+            position: sticky;
+            top: 100px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            background: var(--background);
+        }
+
+        .price-section {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .current-price {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .discount-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .booking-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .date-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .date-input {
+            padding: 12px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .date-input:first-child {
+            border-right: 1px solid var(--border);
+        }
+
+        .guests-select {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .guests-select:focus {
+            border-color: var(--primary);
+        }
+
+        .book-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .book-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .price-breakdown {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .price-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-weight: 600;
+        }
+
+        /* Rooms Section */
+        .rooms-section {
+            padding: 48px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .rooms-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .rooms-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .rooms-filter {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active {
+            background: var(--text-dark);
+            color: white;
+            border-color: var(--text-dark);
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .room-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .room-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+        }
+
+        .room-image {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .room-card:hover .room-image img {
+            transform: scale(1.05);
+        }
+
+        .room-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .room-details {
+            padding: 20px;
+        }
+
+        .room-type {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .room-capacity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .room-amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .room-amenity {
+            background: var(--surface);
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .room-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-price {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .room-book-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .room-book-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 60px 5% 30px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-column h3 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column ul li a {
+            color: #B0B0B0;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .footer-column ul li a:hover {
+            color: white;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .social-icon:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #B0B0B0;
+            font-size: 14px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hotel-info-section {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+            
+            .booking-widget {
+                position: static;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hotel-gallery {
+                grid-template-columns: 1fr;
+                grid-template-rows: 300px 200px 200px;
+            }
+            
+            .main-image {
+                grid-row: 1;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .rooms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-item:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-item:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-item:nth-child(4) { animation-delay: 0.4s; }
+        .stagger-item:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: 8px; }
+        .mt-2 { margin-top: 16px; }
+        .mt-3 { margin-top: 24px; }
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 16px; }
+        .mb-3 { margin-bottom: 24px; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>{{ hotel.name }}</h2>
-    <p>{{ hotel.location }}</p>
-
-    <div class="images">
-        {% if hotel.hotel_image %}
-            <img src="{{ hotel.hotel_image.url }}" alt="{{ hotel.name }}">
-        {% endif %}
-    </div>
-
-    <h3>Description</h3>
-    <p>{{ hotel.description }}</p>
-
-    <h3>Amenities</h3>
-    <div class="amenities">
-        {% if hotel.has_wifi %}<span>Free WiFi</span>{% endif %}
-        {% if hotel.has_parking %}<span>Parking</span>{% endif %}
-        {% if hotel.has_tv %}<span>TV</span>{% endif %}
-        {% if hotel.has_gym %}<span>Gym</span>{% endif %}
-        {% if hotel.has_room_service %}<span>Room Service</span>{% endif %}
-    </div>
-
-    <h3>Rooms & Prices</h3>
-    {% for room in rooms %}
-        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-            <h4>{{ room.room_type }}</h4>
-            <p>Capacity: {{ room.capacity }}</p>
-            <p class="price">₹{{ room.price_per_night }}</p>
-            <a href="#" class="book-btn">Book Now</a>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="" class="logo">
+                <div class="logo-icon">LS</div>
+                <div class="logo-text">LuxeStay</div>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="#">Stays</a>
+                <a href="#">Experiences</a>
+                <a href="#">Online Experiences</a>
+                <a href="#">Business</a>
+            </nav>
+            
+            <div class="user-actions">
+                <div class="user-menu">
+                    <i class="fas fa-bars menu-icon"></i>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-    {% empty %}
-        <p>No rooms available.</p>
-    {% endfor %}
-</div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hotel-hero fade-in">
+        <div class="hotel-gallery">
+            <div class="main-image">
+                {% if hotel.hotel_image %}
+                    <img src="{{ hotel.hotel_image.url }}" alt="{{ hotel.name }}">
+                {% else %}
+                    <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Hotel Image">
+                {% endif %}
+            </div>
+            <div class="side-image">
+                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Hotel Room">
+            </div>
+            <div class="side-image">
+                <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Hotel Lobby">
+            </div>
+            <div class="side-image">
+                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Hotel Amenities">
+            </div>
+            <div class="side-image">
+                <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Hotel Pool">
+            </div>
+            
+            <button class="view-all-photos">
+                <i class="fas fa-images"></i>
+                Show all photos
+            </button>
+        </div>
+    </section>
+
+    <!-- Hotel Info Section -->
+    <section class="hotel-info-section">
+        <div class="hotel-details">
+            <div class="hotel-header">
+                <h1 class="hotel-title">{{ hotel.name }}</h1>
+                <div class="hotel-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ hotel.location }}</span>
+                </div>
+                <div class="hotel-highlights">
+                    <div class="highlight-item">
+                        <i class="fas fa-star highlight-icon"></i>
+                        <span>4.89 · 128 reviews</span>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-medal highlight-icon"></i>
+                        <span>Superhost</span>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-map highlight-icon"></i>
+                        <span>Great location</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="host-info">
+                <div class="host-avatar">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Host">
+                </div>
+                <div class="host-details">
+                    <h3>Hosted by Alex</h3>
+                    <p>Superhost · 5 years hosting</p>
+                </div>
+            </div>
+            
+            <div class="description-section">
+                <h2 class="section-title">About this place</h2>
+                <p class="hotel-description">
+                    {{ hotel.description|default:"Experience luxury and comfort at our premium hotel. Located in the heart of the city, we offer world-class amenities and exceptional service to make your stay memorable. Our well-appointed rooms, fine dining options, and state-of-the-art facilities ensure a perfect blend of relaxation and convenience." }}
+                </p>
+            </div>
+            
+            <div class="amenities-section">
+                <h2 class="section-title">What this place offers</h2>
+                <div class="amenities-grid">
+                    {% if hotel.has_wifi %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-wifi"></i></div>
+                        <span>High-speed WiFi</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel.has_parking %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-parking"></i></div>
+                        <span>Free parking</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel.has_tv %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-tv"></i></div>
+                        <span>HDTV with streaming</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel.has_gym %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-dumbbell"></i></div>
+                        <span>Fitness center</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel.has_room_service %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-concierge-bell"></i></div>
+                        <span>24/7 room service</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel.has_dining %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-utensils"></i></div>
+                        <span>Restaurant & bar</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel.has_elevator %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-elevator"></i></div>
+                        <span>Elevator access</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel.has_cctv %}
+                    <div class="amenity-item stagger-item">
+                        <div class="amenity-icon"><i class="fas fa-shield-alt"></i></div>
+                        <span>Security cameras</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking Widget -->
+        <div class="booking-widget fade-in">
+            <div class="price-section">
+                <div class="current-price">₹{{ hotel.price }}</div>
+                <div class="old-price">₹{{ hotel.old_price }}</div>
+                <div class="discount-badge">25% OFF</div>
+            </div>
+            
+            <div class="booking-form">
+                <div class="date-inputs">
+                    <input type="date" class="date-input" id="checkin" value="{{ today|date:'Y-m-d' }}">
+                    <input type="date" class="date-input" id="checkout" value="{{ tomorrow|date:'Y-m-d' }}">
+                </div>
+                
+                <select class="guests-select" id="guests">
+                    <option>1 guest</option>
+                    <option>2 guests</option>
+                    <option>3 guests</option>
+                    <option>4 guests</option>
+                    <option>5+ guests</option>
+                </select>
+              <a href="{% url 'payment' hotel.id %}" class="btn-view">Book Now</a>
+
+            <div class="price-breakdown">
+                <div class="price-item">
+                    <span>₹{{ hotel.price|default:1092 }} x 5 nights</span>
+                    <span>₹{{ Room.price }}</span>
+                </div>
+                <div class="price-item">
+                    <span>Cleaning fee</span>
+                    <span>₹500</span>
+                </div>
+                <div class="price-item">
+                    <span>Service fee</span>
+                    <span>₹800</span>
+                </div>
+                <div class="price-total">
+                    <span>Total</span>
+                    <span>₹{{ hotel.price|default:1092|add:5668 }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rooms Section -->
+    <section class="rooms-section">
+        <div class="rooms-header">
+            <h2 class="rooms-title">Available Rooms</h2>
+            <div class="rooms-filter">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Standard</button>
+                <button class="filter-btn">Deluxe</button>
+                <button class="filter-btn">Suite</button>
+            </div>
+        </div>
+        
+        <div class="rooms-grid">
+            {% for room in rooms %}
+            <div class="room-card fade-in">
+                <div class="room-image">
+                    <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="{{ room.room_type }}">
+                    <div class="room-badge">Most Popular</div>
+                </div>
+                <div class="room-details">
+                    <h3 class="room-type">{{ room.room_type }}</h3>
+                    <div class="room-capacity">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Sleeps {{ room.capacity }}</span>
+                    </div>
+                    <div class="room-amenities">
+                        <span class="room-amenity">Free WiFi</span>
+                        <span class="room-amenity">Air conditioning</span>
+                        <span class="room-amenity">Private bathroom</span>
+                    </div>
+                    <div class="room-footer">
+                        <div class="room-price">₹{{ room.price_per_night }}/night</div>
+                        <button class="room-book-btn" data-room="{{ room.id }}">Book</button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center">
+                <p>No rooms available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">AirCover</a></li>
+                    <li><a href="#">Safety information</a></li>
+                    <li><a href="#">Supporting people with disabilities</a></li>
+                    <li><a href="#">Cancellation options</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Community</h3>
+                <ul>
+                    <li><a href="#">LuxeStay.org: disaster relief housing</a></li>
+                    <li><a href="#">Combating discrimination</a></li>
+                    <li><a href="#">Community forum</a></li>
+                    <li><a href="#">Referrals</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Hosting</h3>
+                <ul>
+                    <li><a href="#">Host your home</a></li>
+                    <li><a href="#">AirCover for Hosts</a></li>
+                    <li><a href="#">Hosting resources</a></li>
+                    <li><a href="#">Community forum</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>LuxeStay</h3>
+                <ul>
+                    <li><a href="#">Newsroom</a></li>
+                    <li><a href="#">New features</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Investors</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Follow us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2023 LuxeStay, Inc. · Privacy · Terms · Sitemap</p>
+        </div>
+    </footer>
+
+    <script>
+        // Set default dates for check-in and check-out
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        document.getElementById('checkin').valueAsDate = today;
+        document.getElementById('checkout').valueAsDate = tomorrow;
+        
+        // Animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.6s ease forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all stagger items
+        document.querySelectorAll('.stagger-item').forEach(item => {
+            observer.observe(item);
+        });
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Book Now button functionality
+        document.querySelector('.book-btn').addEventListener('click', function() {
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+            const guests = document.getElementById('guests').value;
+            
+            // In a real app, this would redirect to booking page
+            alert(`Booking {{ hotel.name }} from ${checkin} to ${checkout} for ${guests}`);
+        });
+        
+        // Room booking buttons
+        document.querySelectorAll('.room-book-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const roomId = this.getAttribute('data-room');
+                // In a real app, this would redirect to booking page with room pre-selected
+                alert(`Booking room ID: ${roomId}`);
+            });
+        });
+        
+        // View all photos button
+        document.querySelector('.view-all-photos').addEventListener('click', function() {
+            alert('Opening photo gallery');
+        });
+    </script>
 </body>
 </html>

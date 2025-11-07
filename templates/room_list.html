@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ hotel.name }} - Room Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --success-dark: #059669;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --gray: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --radius: 8px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .hotel-info h1 {
+      font-size: 1.8rem;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+    
+    .hotel-info p {
+      color: var(--gray);
+      font-size: 1rem;
+    }
+    
+    .stats {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .stat-card {
+      background: var(--light);
+      padding: 15px 20px;
+      border-radius: var(--radius);
+      text-align: center;
+      min-width: 120px;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+    
+    .total-rooms .stat-value {
+      color: var(--primary);
+    }
+    
+    .occupied-rooms .stat-value {
+      color: var(--success);
+    }
+    
+    .vacant-rooms .stat-value {
+      color: var(--warning);
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding: 15px 20px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .filter-tabs {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .filter-tab {
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .filter-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    .filter-tab:hover:not(.active) {
+      background: var(--light);
+    }
+    
+    .search-box {
+      position: relative;
+      width: 300px;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px 10px 40px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+    }
+    
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+    
+    .room-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .room-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .room-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .room-card.vacant {
+      border-top: 4px solid var(--success);
+    }
+    
+    .room-card.occupied {
+      border-top: 4px solid var(--warning);
+    }
+    
+    .room-header {
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .room-number {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--dark);
+    }
+    
+    .room-status {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .status-vacant {
+      background: #d1fae5;
+      color: var(--success-dark);
+    }
+    
+    .status-occupied {
+      background: #fef3c7;
+      color: var(--warning);
+    }
+    
+    .room-body {
+      padding: 20px;
+    }
+    
+    .room-detail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .detail-label {
+      color: var(--gray);
+      font-weight: 500;
+    }
+    
+    .detail-value {
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .price {
+      font-size: 1.2rem;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    
+    .room-footer {
+      padding: 15px 20px;
+      background: var(--light);
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+    }
+    
+    .btn-checkin {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-checkin:hover {
+      background: var(--primary-dark);
+    }
+    
+    .btn-checkout {
+      background: var(--success);
+      color: white;
+    }
+    
+    .btn-checkout:hover {
+      background: var(--success-dark);
+    }
+    
+    .btn-details {
+      background: white;
+      color: var(--dark);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-details:hover {
+      background: var(--light);
+    }
+    
+    .no-rooms {
+      text-align: center;
+      padding: 40px 20px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .no-rooms i {
+      font-size: 3rem;
+      color: var(--gray);
+      margin-bottom: 15px;
+    }
+    
+    .no-rooms h3 {
+      font-size: 1.5rem;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+    
+    .no-rooms p {
+      color: var(--gray);
+    }
+    
+    .messages {
+      margin-bottom: 20px;
+    }
+    
+    .message {
+      padding: 15px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .message.success {
+      background: #d1fae5;
+      color: var(--success-dark);
+      border-left: 4px solid var(--success);
+    }
+    
+    .message i {
+      font-size: 1.2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      
+      .controls {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .search-box {
+        width: 100%;
+      }
+      
+      .room-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="hotel-info">
+        <h1>{{ hotel.name }}</h1>
+        <p>Room Management Dashboard</p>
+      </div>
+      <div class="stats">
+        <div class="stat-card total-rooms">
+          <div class="stat-value">{{ rooms.count }}</div>
+          <div class="stat-label">Total Rooms</div>
+        </div>
+        <div class="stat-card occupied-rooms">
+          <div class="stat-value">{{ occupied_count }}</div>
+          <div class="stat-label">Occupied</div>
+        </div>
+        <div class="stat-card vacant-rooms">
+          <div class="stat-value">{{ vacant_count }}</div>
+          <div class="stat-label">Vacant</div>
+        </div>
+      </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="message success">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="controls">
+      <div class="filter-tabs">
+        <div class="filter-tab active" data-filter="all">All Rooms</div>
+        <div class="filter-tab" data-filter="vacant">Vacant</div>
+        <div class="filter-tab" data-filter="occupied">Occupied</div>
+      </div>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search by room number...">
+      </div>
+    </div>
+
+    {% if rooms %}
+    <div class="room-grid" id="roomGrid">
+      {% for room in rooms %}
+        <div class="room-card {% if room.is_booked %}occupied{% else %}vacant{% endif %}" 
+             data-status="{% if room.is_booked %}occupied{% else %}vacant{% endif %}" 
+             data-room-number="{{ room.room_number }}">
+          <div class="room-header">
+            <div class="room-number">Room {{ room.room_number }}</div>
+            <div class="room-status {% if room.is_booked %}status-occupied{% else %}status-vacant{% endif %}">
+              {% if room.is_booked %}Occupied{% else %}Vacant{% endif %}
+            </div>
+          </div>
+          <div class="room-body">
+            <div class="room-detail">
+              <span class="detail-label">Type:</span>
+              <span class="detail-value">{{ room.get_room_type_display }}</span>
+            </div>
+            <div class="room-detail">
+              <span class="detail-label">Capacity:</span>
+              <span class="detail-value">{{ room.capacity }} persons</span>
+            </div>
+            <div class="room-detail">
+              <span class="detail-label">Price:</span>
+              <span class="detail-value price">₹{{ room.price }}/night</span>
+            </div>
+            {% if room.is_booked %}
+            <div class="room-detail">
+              <span class="detail-label">Guest:</span>
+              <span class="detail-value">{{ room.current_guest_name }}</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="room-footer">
+            {% if room.is_booked %}
+              <a href="{% url 'room_checkout' room.id %}" class="btn btn-checkout">
+                <i class="fas fa-sign-out-alt"></i> Check Out
+              </a>
+            {% else %}
+              <a href="{% url 'room_checkin' room.id %}" class="btn btn-checkin">
+                <i class="fas fa-sign-in-alt"></i> Check In
+              </a>
+            {% endif %}
+            <button class="btn btn-details">
+              <i class="fas fa-info-circle"></i> Details
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-rooms">
+      <i class="fas fa-door-closed"></i>
+      <h3>No Rooms Available</h3>
+      <p>There are currently no rooms registered for this hotel.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterTabs = document.querySelectorAll('.filter-tab');
+      const roomCards = document.querySelectorAll('.room-card');
+      const searchInput = document.getElementById('searchInput');
+      
+      // Filter functionality
+      filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Remove active class from all tabs
+          filterTabs.forEach(t => t.classList.remove('active'));
+          // Add active class to clicked tab
+          this.classList.add('active');
+          
+          const filter = this.getAttribute('data-filter');
+          
+          roomCards.forEach(card => {
+            const status = card.getAttribute('data-status');
+            
+            if (filter === 'all' || filter === status) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+      
+      // Search functionality
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        roomCards.forEach(card => {
+          const roomNumber = card.getAttribute('data-room-number').toLowerCase();
+          
+          if (roomNumber.includes(searchTerm)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+      
+      // Initialize with all rooms showing
+      filterTabs[0].click();
+    });
+  </script>
+</body>
+</html>

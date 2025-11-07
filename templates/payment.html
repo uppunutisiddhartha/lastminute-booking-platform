@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - {{ hotel.name }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      padding: 40px;
+    }
+    .payment-container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 { text-align: center; color: #333; margin-bottom: 20px; }
+    .summary { margin-bottom: 20px; line-height: 1.6; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 5px;
+    }
+    .btn-pay {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .btn-pay:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+  <div class="payment-container">
+    <h2>Payment for {{ hotel.name }}</h2>
+
+    <div class="summary">
+      <p><strong>Hotel:</strong> {{ hotel.name }}</p>
+      <p><strong>Room Price per Night:</strong> ₹{{ amount }}</p>
+    </div>
+
+    <form action="{% url 'confirm_checkin_hotel' hotel.id %}" method="post">
+      {% csrf_token %}
+
+      <label>Full Name:</label>
+      <input type="text" name="guest_name" required>
+
+      <label>Mobile Number:</label>
+      <input type="text" name="phone" required>
+
+      <label>Email:</label>
+      <input type="email" name="email" required>
+
+      <label>Check-in Date:</label>
+      <input type="date" name="check_in" required min="{{ today|date:'Y-m-d' }}">
+
+      <label>Check-out Date:</label>
+      <input type="date" name="check_out" required min="{{ today|date:'Y-m-d' }}">
+
+      <label>Number of Persons:</label>
+      <input type="number" name="num_persons" min="1" max="10" value="1" required>
+
+      <button type="submit" class="btn-pay">Pay & Confirm Booking</button>
+    </form>
+  </div>
+
+</body>
+</html>
