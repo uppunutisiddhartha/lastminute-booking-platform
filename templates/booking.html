@@ -355,10 +355,11 @@
         <tbody>
             {% for booking in bookings %}
             <tr class="booking-row" 
-                data-id="{{ booking.id }}"
+                data-id="{{ booking.booking_id|lower }}"
+
                 data-name="{{ booking.name|lower }}"
                 data-checkin="{{ booking.check_in|date:'Y-m-d' }}">
-                <td>{{ booking.id }}</td>
+                <td>{{ booking.booking_id }}</td>
                 <td>{{ booking.hotel_room }}</td>
                 <td>{{ booking.hotel_room.room_number }}</td>
                 <td>{{ booking.check_in }}</td>

@@ -734,6 +734,265 @@
             transform: translateY(20px);
             animation: fadeIn 0.6s ease forwards;
         }
+        /* Reviews Section Styles */
+.reviews-section {
+    padding: 48px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+    border-top: 1px solid var(--border);
+}
+
+.reviews-header {
+    margin-bottom: 40px;
+}
+
+.reviews-summary {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    margin-top: 24px;
+}
+
+.rating-overview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.average-rating .rating-number {
+    font-size: 48px;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
+}
+
+.average-rating .stars {
+    margin: 12px 0;
+    color: var(--primary);
+}
+
+.average-rating .review-count {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.rating-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rating-bar {
+    display: grid;
+    grid-template-columns: 120px 1fr 40px;
+    align-items: center;
+    gap: 12px;
+}
+
+.rating-label {
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.bar-container {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.8s ease;
+}
+
+.rating-value {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.review-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: var(--transition);
+}
+
+.review-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-4px);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.reviewer-info {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.reviewer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.reviewer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    color: var(--text-light);
+}
+
+.reviewer-details h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.review-date {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.review-rating .stars {
+    color: var(--primary);
+    font-size: 14px;
+}
+
+.review-content {
+    margin-bottom: 16px;
+}
+
+.review-text {
+    line-height: 1.6;
+    color: var(--text-dark);
+    font-size: 15px;
+}
+
+.host-response {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    border-left: 3px solid var(--accent);
+}
+
+.response-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.response-header i {
+    color: var(--accent);
+}
+
+.response-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-dark);
+}
+
+.no-reviews {
+    grid-column: 1 / -1;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.no-reviews i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: var(--border);
+}
+
+.no-reviews h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.reviews-footer {
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+.show-all-reviews {
+    background: none;
+    border: 1px solid var(--text-dark);
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+}
+
+.show-all-reviews:hover {
+    background: var(--text-dark);
+    color: white;
+}
+
+/* Responsive Design for Reviews */
+@media (max-width: 768px) {
+    .reviews-summary {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .rating-bar {
+        grid-template-columns: 100px 1fr 40px;
+    }
+    
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .review-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .review-rating {
+        align-self: flex-start;
+    }
+}
 
         @keyframes fadeIn {
             to {
@@ -1011,6 +1270,131 @@
             {% endfor %}
         </div>
     </section>
+     <section>
+        <!-- Reviews Section - Replace the existing reviews section with this code -->
+<section class="reviews-section">
+    <div class="reviews-header">
+        <h2 class="section-title">Customer Reviews</h2>
+        <div class="reviews-summary">
+            <div class="rating-overview">
+                <div class="average-rating">
+                    <span class="rating-number">4.89</span>
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <span class="review-count">128 reviews</span>
+                </div>
+            </div>
+            <div class="rating-breakdown">
+                <div class="rating-bar">
+                    <span class="rating-label">Cleanliness</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 95%"></div>
+                    </div>
+                    <span class="rating-value">4.9</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-label">Accuracy</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 93%"></div>
+                    </div>
+                    <span class="rating-value">4.8</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-label">Check-in</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 97%"></div>
+                    </div>
+                    <span class="rating-value">4.9</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-label">Communication</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 96%"></div>
+                    </div>
+                    <span class="rating-value">4.9</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-label">Location</span>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 98%"></div>
+                    </div>
+                    <span class="rating-value">4.9</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="reviews-grid">
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card fade-in">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="reviewer-avatar">
+                            {% if review.user.profile_picture %}
+                                <img src="{{ review.user.profile_picture.url }}" alt="{{ review.user.name }}">
+                            {% else %}
+                                <div class="avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="reviewer-details">
+                            <h4 class="reviewer-name">{{ review.user.name }}</h4>
+                            <span class="review-date">{{ review.created_at|date:"F Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        <div class="stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="review-content">
+                    <p class="review-text">{{ review.comment }}</p>
+                </div>
+                {% if review.response %}
+                <div class="host-response">
+                    <div class="response-header">
+                        <i class="fas fa-reply"></i>
+                        <span>Response from host</span>
+                    </div>
+                    <p class="response-text">{{ review.response }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-reviews text-center">
+                <i class="fas fa-comments"></i>
+                <h3>No reviews yet</h3>
+                <p>Be the first to review this property!</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    {% if reviews|length > 3 %}
+    <div class="reviews-footer">
+        <button class="show-all-reviews">
+            <span>Show all {{ reviews|length }} reviews</span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    {% endif %}
+</section>
+     </section>
+
 
     <!-- Footer -->
     <footer>

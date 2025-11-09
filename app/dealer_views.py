@@ -55,16 +55,16 @@ from .models import Hotel, Dealer, Room
 
 @login_required
 def add_hotel(request):
+    # Get the logged-in dealer directly
     dealer = request.user.dealer
-    existing_hotels = Hotel.objects.filter(dealer=dealer)
 
+    # Limit: only 1 hotel per dealer
+    existing_hotels = Hotel.objects.filter(dealer=dealer)
     if existing_hotels.count() >= 1:
         messages.error(request, "You have reached the maximum limit of hotels you can add.")
         return redirect('dealer_dashboard')
 
     if request.method == 'POST':
-        dealer_id = request.POST.get('dealer_id')
-        dealer = Dealer.objects.get(id=dealer_id)
         price = request.POST.get('price')
         name = request.POST.get('name')
         location = request.POST.get('location')
@@ -89,7 +89,7 @@ def add_hotel(request):
         extras = request.POST.get('extra_amenities')
         extra_amenities = [item.strip() for item in extras.split(',')] if extras else []
 
-        # Create hotel
+        # Create hotel linked to the logged-in dealer
         hotel = Hotel.objects.create(
             dealer=dealer,
             name=name,
@@ -113,20 +113,16 @@ def add_hotel(request):
             non_ac_room_count=non_ac_room_count
         )
 
-        #Auto-generate rooms
+        # Auto-generate rooms
         for i in range(1, ac_room_count + 1):
             Room.objects.create(hotel=hotel, room_number=f"AC-{i}", room_type='AC')
-
         for i in range(1, non_ac_room_count + 1):
             Room.objects.create(hotel=hotel, room_number=f"NAC-{i}", room_type='NON_AC')
 
         messages.success(request, 'Hotel and rooms added successfully!')
         return redirect('add_hotel')
 
-    dealers = Dealer.objects.all()
-    return render(request, 'add_hotel.html', {'dealers': dealers})
-
-
+    return render(request, 'add_hotel.html')
 
 
 
@@ -141,9 +137,13 @@ def dealer_dashboard(request):
         'bookings': bookings,
     })
 
+@login_required
 def bookings(request):
-    #morinig chestha   
-    return render(request, "booking.html")
+    dealer = request.user.dealer
+    hotels = Hotel.objects.filter(dealer=dealer)
+    bookings = Booking.objects.filter(hotel__in=hotels)
+    return render(request, "booking.html", {"bookings": bookings})
+
 
 
 
@@ -177,6 +177,18 @@ def confirm_checkin(request, room_id):
 
     if request.method == 'POST':
         guest_name = request.POST.get('guest_name')
+        check_in = request.POST.get('check_in')
+        check_out = request.POST.get('check_out')
+        number_persons = request.POST.get('num_persons')
+
+        # Validate dates
+
+        try:
+            check_in = datetime.strptime(check_in, '%Y-%m-%d').date()
+            check_out = datetime.strptime(check_out, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, "❌ Invalid date format. Please use YYYY-MM-DD.")
+            return redirect('room_checkin', room_id=room.id)
 
         # ✅ Create booking record
         Booking.objects.create(
@@ -186,9 +198,9 @@ def confirm_checkin(request, room_id):
             hotel=hotel,
             room=room,
             name=guest_name,
-            check_in=timezone.now().date(),  # auto fill today's date
-            check_out=timezone.now().date(), # you can later extend this to user input
-            num_persons=1,
+            check_in=check_in,
+            check_out=check_out, 
+            num_persons=number_persons,
         )
 
         # ✅ Update room status
@@ -202,7 +214,7 @@ def confirm_checkin(request, room_id):
 
 
 @login_required
-def room_checkout(request, room_id):
+def check_out(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     hotel = room.hotel
     # Update room status

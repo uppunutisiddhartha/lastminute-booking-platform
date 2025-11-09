@@ -10,6 +10,8 @@ from datetime import datetime
 from django.utils import timezone
 import requests
 import random
+import io
+from decimal import Decimal
 from reportlab.pdfgen import canvas
 from django.core.mail import EmailMessage
 from reportlab.lib.pagesizes import A4  #for the pdf pip install reportlab
@@ -102,8 +104,15 @@ def hotel_booking(request, hotel_id):
 
 def hotel_detail(request, hotel_id):
     hotel = get_object_or_404(Hotel, id=hotel_id)
-    #rooms = Hotel.objects.filter(hotel=hotel)
-    return render(request, "hotel_detail.html", {"hotel": hotel})
+    #rooms = hotel.rooms.all()  # related_name='rooms' on Room model
+    reviews = Review.objects.filter(hotel=hotel).select_related('user').order_by('-created_at')
+
+    context = {
+        "hotel": hotel,
+        #"rooms": rooms,
+        "reviews": reviews,
+    }
+    return render(request, "hotel_detail.html", context)
 
 
 
@@ -191,7 +200,7 @@ def flight_results(request, source, destination):
 
 # ----------- Flight Checkout Page -----------
 
-@login_required(login_url='login')
+@login_required(login_url='rolelogin')
 def flight_checkout(request):
 
     if request.method == "POST":
@@ -218,7 +227,7 @@ def flight_checkout(request):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='rolelogin')
 def confirm_payment(request):
     """
     Save booking info, send PDF ticket, and show payment confirmation.
@@ -341,59 +350,184 @@ def support(request):
     return render(request,"support/support.html")
 
 
+"""
 
-
-
-
+@login_required
 def payment(request, hotel_id):
     hotel = get_object_or_404(Hotel, id=hotel_id)
 
-    # pick a room to show on the payment page (first available)
-    room = Room.objects.filter(hotel=hotel, is_booked=False).first()
-
-    if not room:
-        # No free rooms — redirect back or show an error
-        messages.error(request, "Sorry — no available rooms in this hotel right now.")
-        return redirect('hotel_detail', hotel_id=hotel.id)
-
-    amount = hotel.price  
-
+    # Just show the payment/booking form (no filtering yet)
     context = {
         'hotel': hotel,
-        'room': room,
-        'amount': amount,
+        'amount': hotel.price,
     }
     return render(request, "payment.html", context)
 
+
+@login_required
 def confirm_checkin_hotel(request, hotel_id):
     hotel = get_object_or_404(Hotel, id=hotel_id)
 
     if request.method == 'POST':
         guest_name = request.POST.get('guest_name')
-        phone = request.POST.get('phone')
         email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        check_in = request.POST.get('check_in')
+        check_out = request.POST.get('check_out')
+        address_proof = request.FILES.get('address_proof')
 
-        room = Room.objects.filter(hotel=hotel, is_booked=False).first()
-        if not room:
-            messages.error(request, "No available rooms in this hotel.")
+        # Convert date strings
+        try:
+            check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
+            check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
+        except Exception:
+            messages.error(request, "Invalid date format.")
             return redirect('payment', hotel_id=hotel.id)
 
+        if check_in_date >= check_out_date:
+            messages.error(request, "Check-out date must be after check-in date.")
+            return redirect('payment', hotel_id=hotel.id)
+
+        # ✅ Find available room for the given range
+        available_room = None
+        for room in Room.objects.filter(hotel=hotel):
+            overlapping = Booking.objects.filter(
+                room=room,
+                check_in__lt=check_out_date,
+                check_out__gt=check_in_date
+            ).exists()
+            if not overlapping:
+                available_room = room
+                break
+
+        if not available_room:
+            messages.error(request, "No available rooms for those dates.")
+            return redirect('payment', hotel_id=hotel.id)
+
+        # ✅ Create booking
         booking = Booking.objects.create(
             user=request.user,
             hotel=hotel,
-            room=room,
+            room=available_room,
             name=guest_name,
-            phone=phone,
-            email=email,
-            check_in=timezone.now().date(),
-            check_out=timezone.now().date(),
+            check_in=check_in_date,
+            check_out=check_out_date,
             num_persons=1,
+            address_proof=address_proof,
         )
 
-        room.is_booked = True
-        room.save()
+        # ✅ Send confirmation email
+        subject = f"Booking Confirmation - {booking.id}"
+        message = (
+            f"Dear {guest_name},\n\n"
+            f"Your booking at {hotel.name} is confirmed.\n"
+            f"Booking ID: {booking.id}\n"
+            f"Hotel: {hotel.name}\n"
+            f"Check-in: {booking.check_in}\n"
+            f"Check-out: {booking.check_out}\n"
+            f"Please show this Booking ID at the hotel reception.\n\n"
+            f"Thank you for choosing us!"
+        )
+        try:
+            if email:
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+        except Exception:
+            messages.warning(request, "Booking created but email could not be sent (check mail settings).")
 
-        # ✉️ Send confirmation email
+        messages.success(request, f"✅ Booking confirmed! Your Booking ID is {booking.id}")
+        return redirect('booking_conformed', hotel_id=hotel.id)
+
+    return redirect('payment', hotel_id=hotel.id)
+
+"""
+
+@login_required
+def booking_conformed(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+    return render(request, "booking_conformed.html", {"hotel": hotel})
+
+
+
+
+
+# ✅ Show payment page — 30% auto-calculated
+@login_required
+def payment(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+
+    # Automatically calculate 30% advance
+    advance_amount = (hotel.price * Decimal('0.30')).quantize(Decimal('0.01'))
+    remaining_amount = (hotel.price - advance_amount).quantize(Decimal('0.01'))
+
+    context = {
+        'hotel': hotel,
+        'advance_amount': advance_amount,
+        'remaining_amount': remaining_amount,
+    }
+    return render(request, "payment.html", context)
+
+
+# ✅ Confirm booking after advance payment
+@login_required
+def confirm_checkin_hotel(request, hotel_id):
+    hotel = get_object_or_404(Hotel, id=hotel_id)
+
+    if request.method == 'POST':
+        guest_name = request.POST.get('guest_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        check_in = request.POST.get('check_in')
+        check_out = request.POST.get('check_out')
+        address_proof = request.FILES.get('address_proof')
+
+        # Convert string to date
+        try:
+            check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
+            check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
+        except Exception:
+            messages.error(request, "Invalid date format.")
+            return redirect('payment', hotel_id=hotel.id)
+
+        if check_in_date >= check_out_date:
+            messages.error(request, "Check-out date must be after check-in date.")
+            return redirect('payment', hotel_id=hotel.id)
+
+        # ✅ Find available room
+        available_room = None
+        for room in Room.objects.filter(hotel=hotel):
+            overlapping = Booking.objects.filter(
+                room=room,
+                check_in__lt=check_out_date,
+                check_out__gt=check_in_date
+            ).exists()
+            if not overlapping:
+                available_room = room
+                break
+
+        if not available_room:
+            messages.error(request, "No available rooms for those dates.")
+            return redirect('payment', hotel_id=hotel.id)
+
+        # ✅ Auto calculate amounts
+        total_price = Decimal(hotel.price)
+        advance_paid = (total_price * Decimal('0.30')).quantize(Decimal('0.01'))
+        remaining_amount = (total_price - advance_paid).quantize(Decimal('0.01'))
+
+        # ✅ Create booking
+        booking = Booking.objects.create(
+            user=request.user,
+            hotel=hotel,
+            room=available_room,
+            name=guest_name,
+            check_in=check_in_date,
+            check_out=check_out_date,
+            num_persons=1,
+            address_proof=address_proof,  # ⚠️ match your model spelling
+            advance_paid=advance_paid,
+            remaining_amount=remaining_amount,
+        )
+
+        # ✅ Send confirmation email
         subject = f"Booking Confirmation - {booking.booking_id}"
         message = (
             f"Dear {guest_name},\n\n"
@@ -401,21 +535,18 @@ def confirm_checkin_hotel(request, hotel_id):
             f"Booking ID: {booking.booking_id}\n"
             f"Hotel: {hotel.name}\n"
             f"Check-in: {booking.check_in}\n"
-            f"Please show this Booking ID at the hotel reception.\n\n"
-            f"Thank you for choosing us!"
+            f"Check-out: {booking.check_out}\n"
+            f"Advance Paid: ₹{advance_paid}\n"
+            f"Remaining Amount: ₹{remaining_amount} (payable at check-in)\n\n"
+            f"Thank you for booking with us!"
         )
-
         try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+            if email:
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
         except Exception:
-            messages.warning(request, "Booking created but email could not be sent (check mail settings).")
+            messages.warning(request, "Booking confirmed, but email could not be sent.")
 
-        messages.success(request, f"✅ Booking confirmed! Your Booking ID is {booking.booking_id}")
+        messages.success(request, f"✅ Booking confirmed! ₹{advance_paid} paid successfully.")
         return redirect('booking_conformed', hotel_id=hotel.id)
 
     return redirect('payment', hotel_id=hotel.id)
-
-
-def booking_conformed(request, hotel_id):
-    hotel = get_object_or_404(Hotel, id=hotel_id)
-    return render(request, "booking_conformed.html", {"hotel": hotel})

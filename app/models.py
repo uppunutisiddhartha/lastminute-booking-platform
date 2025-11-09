@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 import uuid
+from django.utils import timezone
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ('dealer', 'Dealer'),
@@ -92,6 +93,8 @@ class Room(models.Model):
 # -------------------------
 # Booking Model
 # -------------------------
+"""
+
 class Booking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
@@ -117,6 +120,73 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.booking_id} - {self.hotel.name} ({self.check_in} → {self.check_out})"
 
+
+
+class payment(models.Model):
+    PAYMENT_STATUS=(
+        ('Pending','Pending'),
+        ('Success','Success'),
+        ('Failed','Failed'),
+    )
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    Hotel=models.ForeignKey(Hotel,on_delete=models.CASCADE)
+    Room=models.ForeignKey(Room,on_delete=models.CASCADE)
+    booking=models.ForeignKey(Booking,on_delete=models.CASCADE)
+    amount=models.DecimalField(max_digits=10,decimal_places=2)
+    payment_date=models.DateTimeField(auto_now_add=True)
+    payment_status=models.CharField(max_length=10,choices=PAYMENT_STATUS,default='Pending')
+    transaction_id=models.CharField(max_length=50,unique=True)
+
+    def __str__(self):
+        return f"{self.transaction_id} - {self.payment_status}"
+
+"""
+# models.py
+from django.db import models
+from django.conf import settings
+
+class Payment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    hotel = models.ForeignKey('Hotel', on_delete=models.CASCADE)
+    room = models.ForeignKey('Room', on_delete=models.CASCADE)
+    booking = models.ForeignKey('Booking', on_delete=models.CASCADE, null=True, blank=True)
+    
+    
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_type = models.CharField(max_length=20, choices=[
+        ('Advance', 'Advance Payment'),
+        ('Final', 'Final Payment')
+    ], default='Advance')
+    payment_status = models.CharField(max_length=20, default='Success')
+    transaction_id = models.CharField(max_length=50, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.payment_type} - {self.amount}"
+
+
+class Booking(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    hotel = models.ForeignKey('Hotel', on_delete=models.CASCADE)
+    room = models.ForeignKey('Room', on_delete=models.CASCADE)
+    address_proof = models.FileField(upload_to='address_proofs/', null=True, blank=True)
+    name = models.CharField(max_length=100)
+    check_in = models.DateField()
+    check_out = models.DateField()
+    num_persons = models.PositiveIntegerField(default=1)
+    
+    advance_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    remaining_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_checked_out = models.BooleanField(default=False)
+    booking_id = models.CharField(max_length=20, unique=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.booking_id:
+            self.booking_id = f"BK{uuid.uuid4().hex[:6].upper()}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Booking #{self.id} - {self.hotel.name}"
 
 
 
@@ -179,3 +249,13 @@ class support_chat(models.Model):
         return f"{self.user}-{self._state}-{self.Chat_reference_number}"
     
 
+
+class Review(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveIntegerField()
+    comment = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user} - {self.hotel} ({self.rating})"

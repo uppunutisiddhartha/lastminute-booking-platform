@@ -1,33 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Payment - {{ hotel.name }}</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
+      font-family: "Poppins", sans-serif;
+      background: #f5f6fa;
+      margin: 0;
       padding: 40px;
     }
-    .payment-container {
-      max-width: 500px;
-      margin: auto;
+
+    .main {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .payment-container, .upi-container {
       background: white;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      width: 450px;
     }
-    h2 { text-align: center; color: #333; margin-bottom: 20px; }
-    .summary { margin-bottom: 20px; line-height: 1.6; }
-    label { display: block; margin-top: 10px; font-weight: bold; }
+
+    h2, h3 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .summary {
+      margin-bottom: 20px;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
     input {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
       margin-top: 5px;
+      font-size: 14px;
     }
+
     .btn-pay {
       background-color: #28a745;
       color: white;
@@ -38,44 +65,176 @@
       cursor: pointer;
       width: 100%;
       margin-top: 15px;
+      transition: background 0.3s ease;
     }
-    .btn-pay:hover { opacity: 0.9; }
+
+    .btn-pay:hover {
+      background-color: #218838;
+    }
+
+    /* Right side UPI section */
+    .upi-container {
+      text-align: center;
+    }
+
+    .upi-options {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .upi-option {
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .upi-option:hover {
+      transform: scale(1.1);
+    }
+
+    .upi-option img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+    }
+
+    .qr-section {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    #qr-code {
+      margin: 10px auto;
+      width: 180px;
+      height: 180px;
+    }
+
+    .success {
+      color: green;
+      font-weight: bold;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .price-breakdown {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      margin-bottom: 15px;
+    }
+
+    .price-breakdown p {
+      margin: 5px 0;
+    }
+
   </style>
 </head>
 <body>
+  <div class="main">
+    <!-- LEFT SIDE: Booking & Form -->
+    <div class="payment-container">
+      <h2>Booking & Payment for {{ hotel.name }}</h2>
 
-  <div class="payment-container">
-    <h2>Payment for {{ hotel.name }}</h2>
+      <div class="summary">
+        <p><strong>Hotel:</strong> {{ hotel.name }}</p>
+        <p><strong>Location:</strong> {{ hotel.location }}</p>
+        <p><strong>Type:</strong> {{ hotel.room_type }}</p>
+      </div>
 
-    <div class="summary">
-      <p><strong>Hotel:</strong> {{ hotel.name }}</p>
-      <p><strong>Room Price per Night:</strong> ₹{{ amount }}</p>
+      <div class="price-breakdown">
+        <p><strong>Total Room Price:</strong> ₹{{ hotel.price }}</p>
+        <p><strong>Advance (30%):</strong> ₹{{ advance_amount }}</p>
+        <p><strong>Remaining Amount:</strong> ₹{{ remaining_amount }}</p>
+      </div>
+
+      <form action="{% url 'confirm_checkin_hotel' hotel.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label>Full Name:</label>
+        <input type="text" name="guest_name" required />
+
+        <label>Mobile Number:</label>
+        <input type="text" name="phone" required />
+
+        <label>Email:</label>
+        <input type="email" name="email" required />
+
+        <label>Check-in Date:</label>
+        <input type="date" name="check_in" required />
+
+        <label>Check-out Date:</label>
+        <input type="date" name="check_out" required />
+
+        <label>Number of Persons:</label>
+        <input type="number" name="num_persons" min="1" max="10" value="1" required />
+
+        <label>Upload Address Proof:</label>
+        <input type="file" name="address_proof" accept=".pdf,.jpg,.png" required />
+
+        <button type="submit" class="btn-pay">Pay ₹{{ advance_amount }} & Confirm Booking</button>
+      </form>
     </div>
 
-    <form action="{% url 'confirm_checkin_hotel' hotel.id %}" method="post">
-      {% csrf_token %}
+    <!-- RIGHT SIDE: UPI / QR Payment -->
+    <div class="upi-container">
+      <h3>Pay via UPI</h3>
+      <div class="upi-options">
+        <div class="upi-option" onclick="selectApp('PhonePe')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/f/fc/PhonePe_Logo.svg" alt="PhonePe" />
+          <p>PhonePe</p>
+        </div>
+        <div class="upi-option" onclick="selectApp('Google Pay')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Pay_Logo.svg" alt="Google Pay" />
+          <p>GPay</p>
+        </div>
+        <div class="upi-option" onclick="selectApp('Amazon Pay')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Amazon_Pay_logo.svg" alt="Amazon Pay" />
+          <p>Amazon Pay</p>
+        </div>
+      </div>
 
-      <label>Full Name:</label>
-      <input type="text" name="guest_name" required>
+      <label>Enter UPI ID:</label>
+      <input type="text" id="upi-id" placeholder="example@upi" />
 
-      <label>Mobile Number:</label>
-      <input type="text" name="phone" required>
+      <div class="qr-section">
+        <h4>Scan QR to Pay ₹{{ advance_amount }}</h4>
+        <canvas id="qr-code"></canvas>
+      </div>
 
-      <label>Email:</label>
-      <input type="email" name="email" required>
-
-      <label>Check-in Date:</label>
-      <input type="date" name="check_in" required min="{{ today|date:'Y-m-d' }}">
-
-      <label>Check-out Date:</label>
-      <input type="date" name="check_out" required min="{{ today|date:'Y-m-d' }}">
-
-      <label>Number of Persons:</label>
-      <input type="number" name="num_persons" min="1" max="10" value="1" required>
-
-      <button type="submit" class="btn-pay">Pay & Confirm Booking</button>
-    </form>
+      <button type="button" class="btn-pay" onclick="confirmPayment()">Confirm Payment</button>
+      <div class="success" id="success-msg">✅ Payment Successful!</div>
+    </div>
   </div>
 
+  <!-- QR Code Generator Script -->
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+  <script>
+    // Generate QR dynamically for 30% advance
+    let qr = new QRious({
+      element: document.getElementById("qr-code"),
+      size: 180,
+      value: "upi://pay?pa=merchant@upi&pn={{ hotel.name }}&am={{ advance_amount }}&cu=INR",
+    });
+
+    function selectApp(appName) {
+      alert(appName + " selected for payment.");
+    }
+
+    function confirmPayment() {
+      const upi = document.getElementById("upi-id").value;
+      if (!upi) {
+        alert("Please enter your UPI ID or scan the QR code.");
+        return;
+      }
+      document.getElementById("success-msg").style.display = "block";
+      setTimeout(() => {
+        alert("Payment verified! Proceeding with booking...");
+      }, 1500);
+    }
+  </script>
 </body>
 </html>

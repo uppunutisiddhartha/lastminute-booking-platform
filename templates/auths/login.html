@@ -1,19 +1,633 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OYO-style Login</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary: #e23744;     /* OYO red */
+      --dark: #222;
+      --muted: #777;
+      --card-bg: #fff;
+      --glass: rgba(255,255,255,0.85);
+      --radius: 10px;
+    }
+
+    *{box-sizing: border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: 'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color:var(--dark);
+      background:#f5f5f6;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Full width background with blur */
+    .full-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1600&q=80');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -1;
+      filter: blur(8px) brightness(0.8);
+      transform: scale(1.1);
+    }
+
+    .full-bg::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(226,55,68,0.15), rgba(0,0,0,0.4));
+    }
+
+    /* Top tiny bar with language + phone */
+    .topbar{
+      position:fixed;
+      left:0;right:0;top:0;
+      height:48px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:20px;
+      padding:0 28px;
+      z-index:40;
+      background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+      border-bottom:1px solid rgba(0,0,0,0.04);
+      backdrop-filter: blur(8px);
+    }
+    .topbar .left{
+      margin-right:auto;
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+    .topbar .lang{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      font-weight:600;
+      color:var(--muted);
+    }
+    .topbar .call{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .topbar .call strong{color:var(--dark); font-size:14px;}
+
+    /* Main layout - side login card */
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      padding: 80px 40px 20px; /* Account for topbar */
+    }
+
+    /* Side login card - SMALLER SIZE */
+    .side-login-container {
+      width: 360px; /* Reduced from 420px */
+      max-width: 100%;
+      z-index: 10;
+      position: relative;
+      margin-right: 40px;
+    }
+
+    .card{
+      width:100%;
+      background: rgba(255,255,255,0.95);
+      border-radius:16px; /* Slightly smaller radius */
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      padding: 25px; /* Reduced padding */
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Additional blur effect behind card */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      right: -8px;
+      bottom: -8px;
+      background: inherit;
+      filter: blur(20px);
+      z-index: -1;
+      opacity: 0.7;
+    }
+
+    .card .brand{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:20px; /* Reduced margin */
+    }
+    .brand .title{
+      font-weight:700;
+      font-size:22px; /* Smaller font */
+      color: var(--dark);
+    }
+    .brand .promo{
+      background:var(--primary);
+      color:#fff;
+      padding:8px 10px; /* Smaller padding */
+      border-radius:8px;
+      font-size:12px; /* Smaller font */
+      font-weight:600;
+      box-shadow: 0 4px 15px rgba(226,55,68,0.3);
+    }
+
+    .form-group{
+      margin-bottom:18px; /* Reduced margin */
+    }
+
+    input[type="text"], input[type="password"] {
+      width:100%;
+      padding:14px 16px; /* Smaller padding */
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.9);
+      font-size:14px; /* Smaller font */
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 0 0 3px rgba(226,55,68,0.15), 0 6px 20px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+    }
+
+    .note{
+      font-size:14px; /* Smaller font */
+      color:var(--muted);
+      margin:10px 0 20px; /* Reduced margins */
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .primary-btn{
+      width:100%;
+      padding:14px; /* Smaller padding */
+      margin-top:10px;
+      border-radius:10px;
+      border:none;
+      background:var(--primary);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+      font-size:15px; /* Smaller font */
+      box-shadow: 0 8px 25px rgba(226,55,68,0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .primary-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .primary-btn:hover {
+      background: #d32f2f;
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(226,55,68,0.5);
+    }
+
+    .primary-btn:hover::before {
+      left: 100%;
+    }
+
+    .secondary{
+      margin-top:20px; /* Reduced margin */
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      font-size:14px; /* Smaller font */
+      color:var(--muted);
+    }
+
+    .linkish{
+      color:var(--primary);
+      cursor:pointer;
+      font-weight:600;
+      text-decoration:underline;
+      transition: all 0.3s ease;
+    }
+
+    .linkish:hover {
+      color: #d32f2f;
+      text-shadow: 0 0 10px rgba(226,55,68,0.3);
+    }
+
+    .remember-forgot{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:20px 0; /* Reduced margin */
+      font-size:14px; /* Smaller font */
+    }
+
+    .remember-me{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+    }
+
+    .remember-me input {
+      width: 16px; /* Smaller checkbox */
+      height: 16px;
+      accent-color: var(--primary);
+    }
+
+    .forgot-password{
+      color:var(--primary);
+      text-decoration:none;
+      font-weight:500;
+      transition: all 0.3s ease;
+    }
+
+    .forgot-password:hover {
+      color: #d32f2f;
+      text-shadow: 0 0 10px rgba(226,55,68,0.2);
+    }
+
+    .message{
+      margin-top:15px; /* Reduced margin */
+      padding: 12px; /* Smaller padding */
+      border-radius: 8px;
+      font-weight:600;
+      font-size:13px; /* Smaller font */
+      text-align:center;
+      display: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .message.success {
+      background: rgba(232,245,233,0.9);
+      color: #2e7d32;
+      border: 1px solid rgba(200,230,201,0.8);
+    }
+
+    .message.error {
+      background: rgba(255,235,238,0.9);
+      color: #c62828;
+      border: 1px solid rgba(255,205,210,0.8);
+    }
+
+    .message.info {
+      background: rgba(227,242,253,0.9);
+      color: #1565c0;
+      border: 1px solid rgba(187,222,251,0.8);
+    }
+
+    /* Marketing text on the left side */
+    .marketing-content {
+      position: absolute;
+      left: 80px;
+      top: 50%;
+      transform: translateY(-50%);
+      max-width: 500px;
+      color: white;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      z-index: 5;
+    }
+
+    .marketing-content h1 {
+      font-size: 52px;
+      margin-bottom: 24px;
+      font-weight: 700;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff, #f0f0f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .marketing-content p {
+      font-size: 18px;
+      opacity: 0.95;
+      line-height: 1.7;
+      font-weight: 300;
+      padding: 0;
+      background: transparent;
+      backdrop-filter: none;
+      border: none;
+    }
+
+    /* Floating animation for card */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); } /* Smaller float */
+    }
+
+    .card {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px){
+      .marketing-content {
+        left: 40px;
+        max-width: 400px;
+      }
+      
+      .marketing-content h1 {
+        font-size: 42px;
+      }
+      
+      .marketing-content p {
+        font-size: 16px;
+      }
+      
+      .full-bg {
+        filter: blur(6px) brightness(0.8);
+      }
+      
+      .side-login-container {
+        width: 340px; /* Slightly smaller on tablet */
+      }
+    }
+
+    @media (max-width: 768px){
+      .wrap {
+        justify-content: center;
+        padding: 80px 20px 20px;
+      }
+      
+      .side-login-container {
+        margin-right: 0;
+        width: 100%;
+        max-width: 340px; /* Smaller max width */
+      }
+      
+      .marketing-content {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        max-width: 100%;
+        text-align: center;
+        margin-bottom: 30px; /* Reduced margin */
+        padding: 0 20px;
+      }
+      
+      .marketing-content h1 {
+        font-size: 36px;
+      }
+      
+      .marketing-content p {
+        font-size: 16px;
+      }
+      
+      .card {
+        padding: 22px; /* Smaller padding on mobile */
+        animation: none;
+      }
+      
+      .remember-forgot {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      
+      .full-bg {
+        filter: blur(4px) brightness(0.8);
+      }
+    }
+
+    @media (max-width: 480px){
+      .wrap {
+        padding: 70px 15px 15px;
+      }
+      
+      .marketing-content h1 {
+        font-size: 28px; /* Smaller on mobile */
+      }
+      
+      .marketing-content p {
+        font-size: 14px;
+      }
+      
+      .brand {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+      
+      .brand .title {
+        font-size: 20px; /* Smaller title */
+      }
+      
+      .card {
+        padding: 20px; /* Even smaller padding */
+      }
+      
+      .side-login-container {
+        max-width: 320px; /* Smaller on mobile */
+      }
+      
+      .full-bg {
+        filter: blur(3px) brightness(0.8);
+      }
+    }
+
+  </style>
 </head>
 <body>
-    <h2>Login</h2>
-{% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
-<form method="post">
-  {% csrf_token %}
-  <input type="text" name="username" placeholder="Username" required><br>
-  <input type="password" name="password" placeholder="Password" required><br>
-  <button type="submit">Login</button>
+  <!-- Full width background with blur -->
+  <div class="full-bg"></div>
+
+  <!-- Topbar -->
+  <div class="topbar" role="banner" aria-label="Topbar">
+    <div class="left" style="display:flex;align-items:center;gap:12px;">
+      <!-- optional small logo or left items; left blank to mimic OYO -->
+    </div>
+    <div class="lang" aria-hidden="true" style="display:flex;align-items:center;gap:14px">
+      <div class="language">
+        <span style="font-weight:700">EN</span>
+      </div>
+      <div class="call">
+        <strong>0124-6201611</strong>
+        <span style="font-size:11px;color:#6b6b6b">Call us to book now</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="wrap">
+    <!-- Marketing Text on Left Side -->
+    <div class="marketing-content">
+      <h1>There's a smarter way to OYO around</h1>
+      <p>Sign up with your account and get exclusive access to discounts and savings on OYO stays and with our many travel partners.</p>
+    </div>
+
+  <form action=""  method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="side-login-container">
+      <div class="card" role="form" aria-describedby="login-desc">
+        <div class="brand">
+          <div class="title">Login / Signup</div>
+          
+        </div>
+
+        <p id="login-desc" class="note">Please enter your username and password to continue</p>
+
+        <!-- USERNAME FIELD -->
+        <div class="form-group">
+          <input id="username" type="text" name="username" placeholder="Enter username" aria-label="Username" />
+        </div>
+
+        <!-- PASSWORD FIELD -->
+        <div class="form-group">
+          <input id="password" type="password" name="password" placeholder="Enter password" aria-label="Password" />
+        </div>
+
+        <!-- REMEMBER ME & FORGOT PASSWORD -->
+        <div class="remember-forgot">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            Remember me
+          </label>
+          <a href="#" class="forgot-password" id="forgotPassword">Forgot password?</a>
+        </div>
+
+        <button type="submit" id="loginBtn" class="primary-btn">Login</button>
+
+        <div class="message" id="loginMsg"></div>
+
+      <div class="secondary">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span>Don't have an account?</span>
+    <a href="{% url 'customer_register' %}" class="linkish">Sign up</a>
+    <a href="{% url 'dealer_register' %}" class="linkish">dealer_Sign up</a>
+  </div>
+</div>
+
 </form>
-<a href="{% url 'dealer_register' %}">dealer_register</a>
+        <div style="margin-top:20px;text-align:center;font-size:13px;color:var(--muted)">
+          By continuing you agree to our <strong style="color:var(--primary)">Terms & Conditions</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginMsg = document.getElementById('loginMsg');
+    const rememberMe = document.getElementById('rememberMe');
+    const forgotPassword = document.getElementById('forgotPassword');
+    const signupLink = document.getElementById('signupLink');
+
+    // Login button handler
+    loginBtn.addEventListener('click', () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!username) {
+        showMessage('Please enter your username', 'error');
+        usernameInput.focus();
+        return;
+      }
+
+      if (!password) {
+        showMessage('Please enter your password', 'error');
+        passwordInput.focus();
+        return;
+      }
+
+      // Simulate login process
+      showMessage('Logging in...', 'info');
+      
+      setTimeout(() => {
+        // For demo purposes, accept any non-empty credentials
+        if (username && password) {
+          showMessage('Login successful! Redirecting...', 'success');
+          // In real application, you would redirect here:
+          // window.location.href = '/dashboard';
+        } else {
+          showMessage('Invalid credentials. Please try again.', 'error');
+        }
+      }, 1500);
+    });
+
+    // Forgot password handler
+    forgotPassword.addEventListener('click', (e) => {
+      e.preventDefault();
+      const username = usernameInput.value.trim();
+      
+      if (!username) {
+        alert('Please enter your username first to reset your password.');
+        usernameInput.focus();
+        return;
+      }
+      
+      alert(Password reset link would be sent to the email associated with ${username} (simulated));
+    });
+
+    // Sign up link handler
+    signupLink.addEventListener('click', () => {
+      alert('Redirecting to sign up page (simulated)');
+      // In real application: window.location.href = '/signup';
+    });
+
+    // Enter key support
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        loginBtn.click();
+      }
+    });
+
+    usernameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        passwordInput.focus();
+      }
+    });
+
+    // Helper function to show messages
+    function showMessage(text, type) {
+      loginMsg.style.display = 'block';
+      loginMsg.textContent = text;
+      loginMsg.className = 'message ' + type;
+    }
+
+    // Demo credentials suggestion
+    window.addEventListener('load', () => {
+      // You can pre-fill with demo values if needed
+      // usernameInput.value = 'demo_user';
+      // passwordInput.value = 'demo_pass';
+    });
+  </script>
 </body>
 </html>
