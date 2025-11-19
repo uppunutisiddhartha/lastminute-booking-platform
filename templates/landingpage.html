@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LastMinute.ai - Book Hotels & Flights Instantly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e23744;
+            --primary-light: #ff6b7a;
+            --primary-dark: #c41e2a;
+            --secondary-color: #ff9f43;
+            --accent-color: #ff6b6b;
+            --text-dark: #2d3748;
+            --text-medium: #4a5568;
+            --text-light: #718096;
+            --bg-light: #fff5f5;
+            --bg-white: #ffffff;
+            --border-color: #fed7d7;
+            --shadow-sm: 0 2px 8px rgba(226, 55, 68, 0.1);
+            --shadow-md: 0 6px 20px rgba(226, 55, 68, 0.15);
+            --shadow-lg: 0 15px 35px rgba(226, 55, 68, 0.2);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --gradient-primary: linear-gradient(135deg, #e23744 0%, #ff6b7a 100%);
+            --gradient-secondary: linear-gradient(135deg, #ff9f43 0%, #ff6b6b 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffecec 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .top-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 8px 0;
+            font-size: 0.8rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .top-bar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-left-options {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .language, .call-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .language:hover, .call-info:hover {
+            transform: translateY(-2px);
+        }
+
+        .call-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .call-info i {
+            color: #ffd93d;
+        }
+
+        .call-info span {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .call-info small {
+            font-size: 0.7rem;
+            color: #ffeaa7;
+        }
+
+        .main-header {
+            padding: 15px 0;
+            background: var(--bg-white);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo i {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            filter: drop-shadow(0 2px 4px rgba(226, 55, 68, 0.3));
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 12px 0;
+            position: relative;
+            transition: var(--transition);
+            border-radius: 6px;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-link.active::before {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .login-signup {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: var(--transition);
+            border: 2px solid var(--primary-color);
+            background: transparent;
+        }
+
+        .login-signup:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(226, 55, 68, 0.9), rgba(255, 107, 122, 0.8)), url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 200px 0 120px;
+            margin-top: 120px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.1"><polygon points="1000,100 1000,0 0,100"></polygon></svg>');
+            background-size: cover;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            line-height: 1.1;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 50px;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin-top: 40px;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .btn {
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 25px rgba(226, 55, 68, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(226, 55, 68, 0.6);
+        }
+
+        .btn-secondary {
+            background: var(--gradient-secondary);
+            color: white;
+            box-shadow: 0 8px 25px rgba(255, 159, 67, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(255, 159, 67, 0.6);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--bg-white);
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, var(--bg-light), transparent);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-medium);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: var(--bg-white);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-primary);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            width: 90px;
+            height: 90px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: white;
+            font-size: 2.2rem;
+            transition: var(--transition);
+            box-shadow: 0 8px 20px rgba(226, 55, 68, 0.3);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(226, 55, 68, 0.4);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-medium);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Deals Section */
+        .deals {
+            padding: 100px 0;
+            background: var(--bg-light);
+            position: relative;
+        }
+
+        .deals::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, var(--bg-white), transparent);
+        }
+
+        .deals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .deal-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .deal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .deal-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .deal-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .deal-image {
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .deal-card:hover .deal-image {
+            transform: scale(1.1);
+        }
+
+        .deal-content {
+            padding: 25px;
+            position: relative;
+            z-index: 2;
+            background: var(--bg-white);
+        }
+
+        .deal-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(226, 55, 68, 0.3);
+        }
+
+        .deal-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .deal-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .deal-original {
+            color: var(--text-light);
+            text-decoration: line-through;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: white;
+            padding: 80px 0 40px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient-primary);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: white;
+            position: relative;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(8px);
+            color: var(--primary-light);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4a5568;
+            padding-top: 30px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .top-bar-content {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .top-left-options {
+                justify-content: center;
+            }
+            
+            .section-header h2 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-content">
+                    <div class="top-left-options">
+                        <div class="language">
+                            <i class="fa-solid fa-globe"></i> EN
+                        </div>
+                        <div class="call-info">
+                            <i class="fa-solid fa-phone"></i> <span>0124-6201611</span>
+                            <small>Call us to Book Now</small>
+                        </div>
+                    </div>
+                    <!-- <div class="auth-buttons">
+                        <a href="{% url 'rolelogin' %}" class="login-signup">
+                            <i class="fa-regular fa-user"></i> Login / Signup
+                        </a>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="#" class="logo">
+                        <i class="fas fa-bolt pulse"></i>
+                        <h1>LastMinute.ai</h1>
+                    </a>
+                    
+                    <nav class="nav-menu">
+                        <a href="#" class="nav-link active">Home</a>
+                        <a href="{% url 'index' %}" class="nav-link">Hotels</a>
+                        <a href="{ url 'search_flights' }" class="nav-link">Flights</a>
+                        <a href="#" class="nav-link">Deals</a>
+                        <a href="#" class="nav-link">About</a>
+                    </nav>
+                    
+                    <div class="auth-buttons">
+                        <a href="{% url 'rolelogin' %}" class="login-signup">
+                            <i class="fa-regular fa-user"></i> Login / Signup
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Last Minute Deals That Will Blow Your Mind! 🚀</h1>
+                <p>AI-powered travel deals that save you up to 70% on hotels and flights. Book smarter, travel better!</p>
+                
+                <div class="cta-buttons">
+                    <a href="{% url 'index' %}" class="btn btn-primary">
+                        <i class="fas fa-hotel"></i> Find Amazing Hotels
+                    </a>
+                    <a href="{% url 'search_flights' %}" class="btn btn-secondary">
+                        <i class="fas fa-plane"></i> Search Best Flights
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Travelers Love LastMinute.ai</h2>
+                <p>Discover the magic behind our AI-powered travel platform</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Lightning Fast Deals</h3>
+                    <p>Get instant access to exclusive last-minute deals that disappear in seconds. Our AI works 24/7 to find you the best prices.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>Premium Quality</h3>
+                    <p>Luxury hotels and premium flights at unbelievable prices. Experience 5-star travel without the 5-star price tag.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Safe & Secure</h3>
+                    <p>Bank-level security ensures your payments and personal data are always protected. Travel with complete peace of mind.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deals Section -->
+    <section class="deals">
+        <div class="container">
+            <div class="section-header">
+                <h2>🔥 Hot Deals Selling Fast!</h2>
+                <p>Grab these amazing offers before they're gone forever</p>
+            </div>
+            
+            <h2>Recommended Hotels</h2>
+
+{% if hotels %}
+    <div class="hotel-list">
+        {% for hotel in hotels %}
+            <div class="hotel-card">
+                <h3>{{ hotel.name }}</h3>
+                <p>City: {{ hotel.city }}</p>
+                <p>Rating: ⭐ {{ hotel.rating }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No hotels found.</p>
+{% endif %}
+
+                
+                <div class="deal-card">
+                    <div class="deal-image" style="background-image: url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')"></div>
+                    <div class="deal-content">
+                        <span class="deal-badge">55% OFF</span>
+                        <h3>Skyline Penthouse</h3>
+                        <p>New York, USA</p>
+                        <div class="deal-price">$159 <span class="deal-original">$355</span></div>
+                        <p>⭐ 4.9 • Infinity pool</p>
+                    </div>
+                </div>
+                
+                <div class="deal-card">
+                    <div class="deal-image" style="background-image: url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80')"></div>
+                    <div class="deal-content">
+                        <span class="deal-badge">60% OFF</span>
+                        <h3>Mountain Chalet</h3>
+                        <p>Swiss Alps</p>
+                        <div class="deal-price">$129 <span class="deal-original">$325</span></div>
+                        <p>⭐ 4.7 • Ski-in/ski-out</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>LastMinute.ai</h3>
+                    <p>Your AI-powered travel companion for finding unbelievable last-minute deals on luxury hotels and flights worldwide.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="hotels.html">Hotels</a></li>
+                        <li><a href="flights.html">Flights</a></li>
+                        <li><a href="#">Deals</a></li>
+                        <li><a href="#">About</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Cancellation Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-phone"></i> 0124-6201611</li>
+                        <li><i class="fas fa-envelope"></i> support@lastminute.ai</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Travel Street, City</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 LastMinute.ai. All rights reserved. | Your journey to amazing deals starts here! ✈</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    if (this.getAttribute('href') === 'hotels.html' || 
+                        this.getAttribute('href') === 'flights.html') {
+                        e.preventDefault();
+                        // Add click animation
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                            alert('✨ Redirecting to ' + this.textContent + ' page...');
+                        }, 150);
+                    }
+                });
+            });
+
+            // Add scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe feature cards and deal cards
+            document.querySelectorAll('.feature-card, .deal-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease-out';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

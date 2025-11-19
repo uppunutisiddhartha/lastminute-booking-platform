@@ -75,6 +75,7 @@ def add_hotel(request):
         non_ac_room_count = int(request.POST.get('non_ac_room_count') or 0)
 
         # Boolean fields
+        discount = request.POST.get('discount')
         has_wifi = 'has_wifi' in request.POST
         has_parking = 'has_parking' in request.POST
         has_tv = 'has_tv' in request.POST
@@ -90,6 +91,7 @@ def add_hotel(request):
         extra_amenities = [item.strip() for item in extras.split(',')] if extras else []
 
         # Create hotel linked to the logged-in dealer
+        after_discount_price = float(price) * (1 - float(discount)/100) if discount else float(price)
         hotel = Hotel.objects.create(
             dealer=dealer,
             name=name,
@@ -98,6 +100,7 @@ def add_hotel(request):
             floor_count=floor_count,
             price=price,
             hotel_image=hotel_image,
+            discount=discount,
             has_wifi=has_wifi,
             has_parking=has_parking,
             has_tv=has_tv,
@@ -110,7 +113,8 @@ def add_hotel(request):
             has_gym=has_gym,
             extra_amenities=extra_amenities,
             ac_room_count=ac_room_count,
-            non_ac_room_count=non_ac_room_count
+            non_ac_room_count=non_ac_room_count,
+            after_discount_price=after_discount_price,
         )
 
         # Auto-generate rooms
@@ -169,7 +173,7 @@ def room_checkin(request, room_id):
     }
     return render(request, 'check_in.html', context)
 
-
+"""
 @login_required
 def confirm_checkin(request, room_id):
     room = get_object_or_404(Room, id=room_id)
@@ -177,62 +181,238 @@ def confirm_checkin(request, room_id):
 
     if request.method == 'POST':
         guest_name = request.POST.get('guest_name')
-        check_in = request.POST.get('check_in')
-        check_out = request.POST.get('check_out')
+        check_in_str = request.POST.get('check_in')
+        check_out_str = request.POST.get('check_out')
         number_persons = request.POST.get('num_persons')
 
         # Validate dates
-
         try:
-            check_in = datetime.strptime(check_in, '%Y-%m-%d').date()
-            check_out = datetime.strptime(check_out, '%Y-%m-%d').date()
+            check_in = datetime.strptime(check_in_str, '%Y-%m-%d').date()
+            check_out = datetime.strptime(check_out_str, '%Y-%m-%d').date()
         except ValueError:
             messages.error(request, "❌ Invalid date format. Please use YYYY-MM-DD.")
             return redirect('room_checkin', room_id=room.id)
 
-        # ✅ Create booking record
-        Booking.objects.create(
+        if check_in >= check_out:
+            messages.error(request, "Check-out date must be after check-in date.")
+            return redirect('room_checkin', room_id=room.id)
+
+        # Check overlapping bookings for this room
+        overlapping = Booking.objects.filter(
+            room=room,
+            check_in__lt=check_out,
+            check_out__gt=check_in,
+            is_checked_out=False
+        ).exists()
+        if overlapping:
+            messages.error(request, "This room is already booked for the selected dates.")
+            return redirect('room_checkin', room_id=room.id)
+
+        # Create booking record
+        booking = Booking.objects.create(
             user=request.user,
             email=request.user.email,
-             number=request.user.phone,
+            number=request.user.phone,
             hotel=hotel,
             room=room,
             name=guest_name,
             check_in=check_in,
-            check_out=check_out, 
+            check_out=check_out,
             num_persons=number_persons,
         )
 
-        # ✅ Update room status
-        room.is_booked = True
-        room.save()
+        # Only mark room.is_booked True if the booking covers today (actual check-in happening now)
+        today = timezone.now().date()
+        if check_in <= today < check_out:
+            room.is_booked = True
+            room.booked_by = guest_name
+            room.save()
 
-        messages.success(request, f"✅ Room {room.room_number} checked in for {guest_name}.")
+        messages.success(request, f"✅ Booking created for room {room.room_number} — guest: {guest_name}.")
         return redirect('room_list', hotel_id=hotel.id)
 
     return redirect('room_list', hotel_id=hotel.id)
+"""
+@login_required
+def confirm_checkin(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    hotel = room.hotel
 
+    if request.method == 'POST':
+        guest_name = request.POST.get('guest_name')
+        check_in_str = request.POST.get('check_in')
+        check_out_str = request.POST.get('check_out')
+        number_persons = request.POST.get('num_persons')
 
+        check_in = datetime.strptime(check_in_str, '%Y-%m-%d').date()
+        check_out = datetime.strptime(check_out_str, '%Y-%m-%d').date()
+
+        if check_in >= check_out:
+            messages.error(request, "Check-out date must be after check-in date.")
+            return redirect('room_checkin', room_id=room.id)
+
+        overlapping = Booking.objects.filter(
+            room=room,
+            check_in__lt=check_out,
+            check_out__gt=check_in,
+            is_checked_out=False
+        ).exists()
+
+        if overlapping:
+            messages.error(request, "This room is already booked for the selected dates.")
+            return redirect('room_checkin', room_id=room.id)
+
+        booking = Booking.objects.create(
+            user=request.user,
+            email=request.user.email,
+            number=request.user.phone,
+            hotel=hotel,
+            room=room,
+            name=guest_name,
+            check_in=check_in,
+            check_out=check_out,
+            num_persons=number_persons,
+        )
+
+        # 🔥 Always block room immediately
+        room.is_booked = True
+        room.booked_by = guest_name
+        room.save()
+
+        messages.success(request, f"Room {room.room_number} is now booked for {guest_name}.")
+        return redirect('room_list', hotel_id=hotel.id)
+
+    return redirect('room_list', hotel_id=hotel.id)
+"""
 @login_required
 def check_out(request, room_id):
     room = get_object_or_404(Room, id=room_id)
-    hotel = room.hotel
-    # Update room status
-    room.is_booked = False
-    room.save()
 
- 
-    Booking.objects.filter(room=room, check_out=timezone.now().date()).update(check_out=timezone.now().date())
+    booking = Booking.objects.filter(room=room, is_checked_out=False).last()
 
-    messages.success(request, f"✅ Room {room.room_number} has been checked out successfully.")
-    return redirect('room_list', hotel_id=hotel.id)
+    if not booking:
+        messages.error(request, "No active booking found for this room.")
+        return redirect('room_list', hotel_id=room.hotel.id)
+
+    # Billing Calculation
+    stay_days = (timezone.now().date() - booking.check_in).days
+    if stay_days <= 0:
+        stay_days = 1  # minimum 1 day
+
+    room_price = room.hotel.price  # <-- IMPORTANT FIX HERE
+
+    total_cost = stay_days * room_price
+    advance = booking.advance_paid
+    remaining = total_cost - advance
+
+    booking.remaining_amount = remaining
+    booking.save()
+
+    return render(request, "checkout_payment.html", {
+        "room": room,
+        "booking": booking,
+        "stay_days": stay_days,
+        "room_price": room_price,
+        "total_cost": total_cost,
+        "advance": advance,
+        "remaining": remaining
+    })
+"""
+@login_required
+def check_out(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    booking = Booking.objects.filter(room=room, is_checked_out=False).last()
+
+    if not booking:
+        messages.error(request, "No active booking found for this room.")
+        return redirect('room_list', hotel_id=room.hotel.id)
+
+    stay_days = (timezone.now().date() - booking.check_in).days
+    if stay_days <= 0:
+        stay_days = 1
+
+    room_price = room.hotel.price
+    total_cost = stay_days * room_price
+    advance = booking.advance_paid
+    remaining = total_cost - advance
+
+    # Convert to paise for Razorpay
+    amount_paise = int(remaining * 100)
+
+    # Create Razorpay Order
+    razorpay_order = razorpay_client.order.create({
+        "amount": amount_paise,
+        "currency": "INR",
+        "payment_capture": 1
+    })
+
+    context = {
+        "room": room,
+        "booking": booking,
+        "stay_days": stay_days,
+        "room_price": room_price,
+        "total_cost": total_cost,
+        "advance": advance,
+        "remaining": remaining,
+        "razorpay_order_id": razorpay_order["id"],
+        "razorpay_key": settings.RAZOR_KEY_ID,
+        "amount_paise": amount_paise
+    }
+
+    return render(request, "checkout_payment.html", context)
+
+
+@login_required
+def confirm_checkout(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, is_checked_out=False)
+
+    remaining_paid = float(request.POST.get("remaining_paid", 0))
+
+    stay_days = (timezone.now().date() - booking.check_in).days
+    if stay_days <= 0:
+        stay_days = 1
+
+    room_price = booking.room.hotel.price
+
+    total_cost = stay_days * room_price
+    remaining = total_cost - booking.advance_paid
+
+    if remaining_paid < remaining:
+        messages.error(request, "Please pay the full remaining amount.")
+        return redirect('room_checkout', room_id=booking.room.id)
 
 
 
+    # Update booking
+    booking.check_out = timezone.now().date()
+    booking.remaining_amount = 0
+    booking.is_checked_out = True
+    booking.save()
+
+    # Mark room as available
+    booking.room.is_booked = False
+    booking.room.save()
+
+    # Save payment record
+    Payment.objects.create(
+        user=booking.user,
+        hotel=booking.hotel,
+        room=booking.room,
+        booking=booking,
+        amount=remaining_paid,
+        payment_type='Final',
+        transaction_id=f"TXN{uuid.uuid4().hex[:8].upper()}",
+        payment_status="Success"
+    )
+
+    messages.success(request, f"Room {booking.room.room_number} checked out successfully!")
+    return redirect("room_list", hotel_id=booking.hotel.id)
 
 
 
+import razorpay
 
+razorpay_client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
 
 
 

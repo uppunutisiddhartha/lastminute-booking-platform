@@ -16,6 +16,11 @@ from reportlab.pdfgen import canvas
 from django.core.mail import EmailMessage
 from reportlab.lib.pagesizes import A4  #for the pdf pip install reportlab
 
+def landingpage(request):
+    return render(request,"landingpage.html")
+
+
+
 def index(request):
     hotels = Hotel.objects.all().prefetch_related('rooms')  # load all hotels with their rooms efficiently
     return render(request, 'index.html', {'hotels': hotels})

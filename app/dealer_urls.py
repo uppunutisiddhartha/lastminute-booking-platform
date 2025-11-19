@@ -10,7 +10,7 @@ urlpatterns = [
     path('room_list/<int:hotel_id>/', dealer_views.room_list, name='room_list'),
     path('room_checkin/<int:room_id>', dealer_views.room_checkin, name='room_checkin'),
    path('room/<int:room_id>/checkout/', dealer_views.check_out, name='room_checkout'),
-
+    path('booking/<int:booking_id>/confirm-checkout/', dealer_views.confirm_checkout, name='confirm_checkout'),
     path('room_checkin/confirm/<int:room_id>/', dealer_views.confirm_checkin, name='confirm_checkin'),
 
 

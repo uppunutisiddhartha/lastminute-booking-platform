@@ -390,6 +390,8 @@
                 </td>
                 <td>
                     <div class="action-buttons">
+                       <a href="{% url 'room_checkin' booking.room.id %}">Check-in</a>
+
                         {% if booking.status != 'cancelled' and booking.status != 'checked_out' %}
                             <button class="btn btn-cancel" onclick="showCancelModal('{{ booking.id }}', '{{ booking.hotel_room }}')">Cancel Room</button>
                         {% endif %}

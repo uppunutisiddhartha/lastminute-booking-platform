@@ -499,8 +499,10 @@
             <div class="logo">
                 <h1>OYO<span>Hotels</span></h1>
             </div>
+           <!-- Add this after the nav-links in the header -->
             <div class="nav-links">
-                <a href="#">Hotels</a>
+                <a href="#" class="nav-active">Hotels</a>
+                <a href="{% url 'search_flights' %}">Flights</a>
                 <a href="#">Vacation Homes</a>
                 <a href="#">Resorts</a>
                 <a href="#">OYO Flagship</a>
@@ -590,18 +592,13 @@
                         <div class="price-container">
                             <div class="price">₹{{ hotel.price }} <span>per night</span></div>
                             <div class="old-price">₹{{ hotel.old_price }}</div>
-                            <div class="offer">73% off</div>
+                            <div class="offer">{{ hotel.discount }} off</div>
                             
                         </div>
                         <div class="btns">
     <!-- View hotel details -->
     <a href="{% url 'hotel_detail' hotel.id %}" class="btn-view">View Details</a>
     <a href="{% url 'payment' hotel.id %}" class="btn-view">Book Now</a>
-
-
-
-
-    
 </div>
 
                     </div>

@@ -62,6 +62,8 @@ class Hotel(models.Model):
     has_swimming_pool = models.BooleanField(default=False)
     has_gym = models.BooleanField(default=False)
 
+    discount = models.CharField(max_length=50, null=True, blank=True)
+
     extra_amenities = models.JSONField(default=list, blank=True)
     floor_count = models.PositiveIntegerField(default=1)
     hotel_image = models.ImageField(upload_to='hotel_images/', null=True, blank=True)
@@ -173,6 +175,8 @@ class Booking(models.Model):
     name = models.CharField(max_length=100)
     check_in = models.DateField()
     check_out = models.DateField()
+    number = models.CharField(max_length=15)
+    email = models.EmailField()
     num_persons = models.PositiveIntegerField(default=1)
     
     advance_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -259,3 +263,9 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.hotel} ({self.rating})"
+    
+
+class useractivity(models.Model):
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    Hotel=models.ForeignKey(Hotel,on_delete=models.CASCADE)
+    

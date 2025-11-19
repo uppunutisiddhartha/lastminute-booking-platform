@@ -8,7 +8,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name="index"),
+    path('', views.landingpage, name="landingpage"),
+    path('index/', views.index, name="index"),
     path('login/', views.rolelogin, name='rolelogin'),
     path('logout/', views.logout_view, name='logout'),
     path('customer_register/', views.customer_register, name='customer_register'),

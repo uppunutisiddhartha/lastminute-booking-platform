@@ -1187,8 +1187,8 @@
         <div class="booking-widget fade-in">
             <div class="price-section">
                 <div class="current-price">₹{{ hotel.price }}</div>
-                <div class="old-price">₹{{ hotel.old_price }}</div>
-                <div class="discount-badge">25% OFF</div>
+                <div class="old-price">₹{{ hotel.after_discount_price }}</div>
+                <div class="discount-badge">{{ hotel.discount }} %OFF</div>
             </div>
             
             <div class="booking-form">
