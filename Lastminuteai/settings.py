@@ -157,5 +157,5 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 
 
-RAZORPAY_KEY_ID = 'your_key_id'
-RAZORPAY_KEY_SECRET = 'your_key_secret'
+RAZOR_KEY_ID = 'your_key_id'
+RAZOR_KEY_SECRET = 'your_key_secret'
